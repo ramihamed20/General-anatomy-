@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>General Anatomy — Study App</title>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#080d14"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #080d14;
+  --surface: #0f1620;
+  --surface2: #161f2e;
+  --surface3: #1c2840;
+  --border: #1e2d45;
+  --border2: #243550;
+  --text: #e4eaf5;
+  --text2: #a8b8d8;
+  --muted: #5a6e8f;
+  --accent: #3d8ef0;
+  --accent-glow: rgba(61,142,240,0.18);
+  --accent2: #30d4a0;
+  --accent2-glow: rgba(48,212,160,0.15);
+  --red: #f06060;
+  --green: #30d4a0;
+  --yellow: #f0c030;
+  --card-h: clamp(210px, 52vw, 330px);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+button, [role="button"] { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(61,142,240,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(61,142,240,0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+.topbar, .main, .bottomnav { position: relative; z-index: 1; }
+
+.topbar {
+  background: linear-gradient(180deg, #0d1624 0%, #0a1220 100%);
+  border-bottom: 1px solid var(--border2);
+  padding: max(14px, env(safe-area-inset-top)) 18px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+}
+.topbar h1 {
+  font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--text2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.topbar h1 span {
+  background: linear-gradient(135deg, var(--accent) 0%, #60b4ff 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.badge {
+  font-size: 10px;
+  background: linear-gradient(135deg, var(--accent) 0%, #2a7de0 100%);
+  color: #fff; padding: 4px 10px; border-radius: 20px; font-weight: 700;
+  letter-spacing: 0.3px; box-shadow: 0 2px 8px rgba(61,142,240,0.3);
+}
+
+.main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; overscroll-behavior: contain; }
+.section { display: none; padding: 14px 14px 96px; animation: fadeSlideUp 0.25s ease; }
+.section.active { display: flex; flex-direction: column; }
+
+.bottomnav {
+  display: flex;
+  background: linear-gradient(180deg, #0a1220 0%, #080d14 100%);
+  border-top: 1px solid var(--border2);
+  flex-shrink: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -2px 16px rgba(0,0,0,0.25);
+}
+.navbtn {
+  flex: 1; padding: 12px 8px; background: none; border: none; color: var(--muted);
+  font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  transition: color 0.2s, transform 0.15s; min-height: 52px; letter-spacing: 0.2px;
+}
+.navbtn.active { color: var(--accent); }
+.navbtn.active svg { filter: drop-shadow(0 0 4px rgba(61,142,240,0.5)); }
+.navbtn:active { opacity: 0.7; }
+.navbtn svg { width: 22px; height: 22px; }
+
+/* ── SHEET TABS ── */
+.sheet-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 14px; }
+.sheet-tab {
+  flex: 1; padding: 11px 8px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--text2); font-size: 12px; font-weight: 700; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-align: center;
+  min-height: 44px; letter-spacing: 0.1px;
+}
+.sheet-tab:active { transform: scale(0.97); }
+.sheet-tab.active {
+  background: linear-gradient(135deg, var(--accent) 0%, #2a7de0 100%);
+  border-color: var(--accent); color: #fff;
+  box-shadow: 0 3px 14px rgba(61,142,240,0.35);
+}
+
+/* ── FILTER TABS ── */
+.filter-row {
+  display: flex; gap: 7px; margin-bottom: 16px;
+  overflow-x: auto; padding: 2px 0 8px;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-btn {
+  flex-shrink: 0; padding: 8px 14px; border-radius: 22px;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--text2); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.18s; font-family: 'DM Sans', sans-serif;
+  min-height: 38px; scroll-snap-align: start; letter-spacing: 0.1px;
+}
+.filter-btn:active { transform: scale(0.95); }
+.filter-btn.active {
+  background: linear-gradient(135deg, var(--accent) 0%, #2a7de0 100%);
+  border-color: var(--accent); color: #fff;
+  box-shadow: 0 2px 12px rgba(61,142,240,0.35);
+}
+
+/* ── FLASH CARD ── */
+.fc-counter { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 12px; font-weight: 500; letter-spacing: 0.3px; }
+.fc-counter strong { color: var(--accent); }
+.fc-scene {
+  width: 100%; height: var(--card-h); perspective: 1000px; -webkit-perspective: 1000px;
+  cursor: pointer; margin-bottom: 14px; touch-action: manipulation;
+  transition: opacity 0.1s, transform 0.1s; will-change: auto;
+  user-select: none; -webkit-user-select: none;
+}
+.fc-scene:active { opacity: 0.92; transform: scale(0.995); }
+.fc-card {
+  width: 100%; height: 100%; position: relative;
+  transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+  transition: transform 0.42s cubic-bezier(0.35, 0, 0.25, 1); will-change: transform;
+}
+.fc-card.flipped { transform: rotateY(180deg); }
+.fc-front, .fc-back {
+  position: absolute; inset: 0; border-radius: 16px; padding: 24px 22px;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.fc-front {
+  background: linear-gradient(160deg, var(--surface) 0%, var(--surface2) 100%);
+  border: 1px solid var(--border2); box-shadow: var(--shadow);
+}
+.fc-back {
+  background: linear-gradient(160deg, #0e1e36 0%, #112240 100%);
+  border: 1px solid rgba(61,142,240,0.25);
+  box-shadow: var(--shadow), 0 0 30px rgba(61,142,240,0.06);
+  transform: rotateY(180deg);
+}
+.fc-tag {
+  font-size: 9px; letter-spacing: 1.2px; background: var(--accent-glow);
+  border: 1px solid rgba(61,142,240,0.2); color: var(--accent);
+  padding: 4px 10px; border-radius: 12px; align-self: flex-start;
+  text-transform: uppercase; font-weight: 700; margin-bottom: 14px;
+}
+.fc-question {
+  font-size: clamp(14px, 3.8vw, 17px); line-height: 1.6; color: var(--text);
+  font-weight: 400; text-align: center;
+  overflow-y: auto; max-height: 180px; -webkit-overflow-scrolling: touch;
+  word-break: break-word; hyphens: auto;
+}
+.fc-tap-hint { font-size: 11px; color: var(--muted); margin-top: 16px; display: flex; align-items: center; gap: 5px; }
+.fc-answer {
+  font-size: clamp(13px, 3.6vw, 16px); line-height: 1.65; color: var(--accent2);
+  font-weight: 500; text-align: center;
+  overflow-y: auto; max-height: 180px; -webkit-overflow-scrolling: touch;
+  word-break: break-word; hyphens: auto;
+}
+.fc-answer-label { font-size: 9px; letter-spacing: 1.2px; color: var(--accent2); text-transform: uppercase; font-weight: 700; margin-bottom: 12px; opacity: 0.7; }
+
+.fc-controls { display: flex; gap: 10px; justify-content: center; margin-bottom: 14px; }
+.fc-btn {
+  flex: 1; max-width: 130px; padding: 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border2); background: var(--surface); color: var(--text);
+  font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.18s;
+  font-family: 'DM Sans', sans-serif; display: flex; align-items: center;
+  justify-content: center; gap: 6px; min-height: 48px;
+}
+.fc-btn:active { transform: scale(0.96); }
+.fc-btn:hover { background: var(--surface2); border-color: var(--accent); }
+.fc-btn.primary {
+  background: linear-gradient(135deg, var(--accent) 0%, #2a7de0 100%);
+  border-color: transparent; box-shadow: 0 3px 14px rgba(61,142,240,0.35);
+}
+.fc-shuffle-row { display: flex; justify-content: center; gap: 10px; }
+.fc-small-btn {
+  padding: 10px 18px; border-radius: var(--radius-sm); border: 1px solid var(--border2);
+  background: none; color: var(--muted); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.18s;
+  display: flex; align-items: center; gap: 5px; min-height: 44px;
+}
+.fc-small-btn:active { transform: scale(0.95); }
+.fc-small-btn:hover { color: var(--text); border-color: var(--accent); }
+
+/* ── QUIZ ── */
+.quiz-start { text-align: center; padding: 4px 0; }
+.quiz-start h2 {
+  font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--text2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.quiz-start p { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+.start-options { display: flex; flex-direction: column; gap: 9px; max-width: 340px; margin: 0 auto 16px; }
+.start-opt-btn {
+  padding: 14px 16px; border-radius: var(--radius); border: 1px solid var(--border2);
+  background: var(--surface); color: var(--text); text-align: left; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.2s; min-height: 56px;
+  position: relative; overflow: hidden;
+}
+.start-opt-btn::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--accent); opacity: 0; transition: opacity 0.2s; border-radius: 3px 0 0 3px;
+}
+.start-opt-btn:hover { border-color: var(--accent); background: var(--surface2); }
+.start-opt-btn:hover::before { opacity: 1; }
+.start-opt-btn:active { transform: scale(0.98); }
+.start-opt-btn .sot { font-size: 14px; font-weight: 700; display: block; margin-bottom: 3px; }
+.start-opt-btn .son { font-size: 11px; color: var(--muted); }
+.start-opt-all {
+  border-color: var(--accent) !important;
+  background: linear-gradient(135deg, rgba(61,142,240,0.1) 0%, rgba(61,142,240,0.05) 100%) !important;
+}
+.start-opt-all::before { opacity: 1 !important; background: linear-gradient(180deg, var(--accent) 0%, var(--accent2) 100%) !important; }
+.start-opt-all .sot { color: var(--accent); }
+
+.quiz-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.quiz-back-btn {
+  display: flex; align-items: center; gap: 5px; padding: 7px 12px; border-radius: 20px;
+  border: 1px solid var(--border2); background: var(--surface); color: var(--muted);
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.18s; flex-shrink: 0; min-height: 36px;
+}
+.quiz-back-btn:hover { color: var(--text); border-color: var(--accent); }
+.quiz-back-btn:active { transform: scale(0.95); }
+.quiz-q-num { font-size: 12px; color: var(--muted); font-weight: 600; flex: 1; text-align: center; }
+.quiz-score-chip {
+  font-size: 12px; font-weight: 700; color: var(--accent2); background: var(--accent2-glow);
+  border: 1px solid rgba(48,212,160,0.2); padding: 4px 12px; border-radius: 20px; flex-shrink: 0;
+}
+.quiz-progress-bar { height: 3px; background: var(--surface2); border-radius: 4px; margin-bottom: 14px; overflow: hidden; }
+.quiz-progress-fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
+  background-size: 200% 100%; animation: shimmer 2s linear infinite;
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 8px rgba(61,142,240,0.4);
+}
+.quiz-card {
+  background: linear-gradient(160deg, var(--surface) 0%, var(--surface2) 100%);
+  border: 1px solid var(--border2); border-radius: var(--radius); padding: 18px 16px;
+  margin-bottom: 12px; box-shadow: var(--shadow);
+}
+.quiz-type-badge { font-size: 9px; padding: 4px 10px; border-radius: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; }
+.quiz-type-badge.tf { background: rgba(240,192,48,0.12); color: var(--yellow); border: 1px solid rgba(240,192,48,0.2); }
+.quiz-type-badge.mcq { background: var(--accent-glow); color: var(--accent); border: 1px solid rgba(61,142,240,0.2); }
+.quiz-question { font-size: clamp(14px, 3.8vw, 16px); line-height: 1.65; color: var(--text); margin-bottom: 16px; margin-top: 10px; }
+.quiz-options { display: flex; flex-direction: column; gap: 9px; }
+.quiz-opt {
+  padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border2);
+  background: var(--surface2); color: var(--text); font-size: 15px; font-weight: 400;
+  cursor: pointer; text-align: left; transition: all 0.18s; font-family: 'DM Sans', sans-serif;
+  line-height: 1.45; display: flex; align-items: flex-start; gap: 10px; min-height: 52px;
+}
+.quiz-opt:hover { border-color: var(--accent); background: var(--surface3); }
+.quiz-opt:active { opacity: 0.85; transform: scale(0.99); }
+.quiz-opt.correct { background: rgba(48,212,160,0.1); border-color: var(--green); color: var(--green); box-shadow: 0 0 12px rgba(48,212,160,0.1); }
+.quiz-opt.wrong { background: rgba(240,96,96,0.1); border-color: var(--red); color: var(--red); }
+.quiz-opt.show-correct { background: rgba(48,212,160,0.07); border-color: var(--green); color: var(--green); }
+.quiz-opt .opt-label { font-weight: 700; font-size: 12px; opacity: 0.5; flex-shrink: 0; margin-top: 1px; }
+.quiz-opt.correct .opt-label, .quiz-opt.wrong .opt-label, .quiz-opt.show-correct .opt-label { opacity: 1; }
+.quiz-opt[disabled] { cursor: default; }
+
+.quiz-explanation {
+  margin-top: 12px; padding: 12px 14px; background: var(--accent-glow);
+  border: 1px solid rgba(61,142,240,0.18); border-radius: var(--radius-sm);
+  font-size: 13px; color: var(--text2); line-height: 1.6; display: none;
+  animation: fadeSlideUp 0.3s ease;
+}
+.quiz-explanation.visible { display: block; }
+.quiz-explanation strong { color: var(--accent); }
+.quiz-next-btn {
+  width: 100%; padding: 15px; border-radius: var(--radius-sm); border: none;
+  background: linear-gradient(135deg, var(--accent) 0%, #2a7de0 100%); color: #fff;
+  font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  min-height: 52px; box-shadow: 0 4px 18px rgba(61,142,240,0.35);
+  transition: opacity 0.18s, transform 0.15s; letter-spacing: 0.2px; display: none;
+  animation: fadeSlideUp 0.3s ease;
+}
+.quiz-next-btn.visible { display: block; animation: pulseIn 0.3s ease both; }
+.quiz-next-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+.tf-buttons { display: flex; gap: 10px; }
+.tf-btn {
+  flex: 1; padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border2);
+  background: var(--surface2); color: var(--text); font-size: 17px; font-weight: 700;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.18s; min-height: 56px;
+}
+.tf-btn:active { transform: scale(0.97); }
+.tf-btn.true-btn:hover { background: rgba(48,212,160,0.1); border-color: var(--green); }
+.tf-btn.false-btn:hover { background: rgba(240,96,96,0.1); border-color: var(--red); }
+.tf-btn.correct { background: rgba(48,212,160,0.15); border-color: var(--green); color: var(--green); box-shadow: 0 0 12px rgba(48,212,160,0.1); }
+.tf-btn.wrong { background: rgba(240,96,96,0.12); border-color: var(--red); color: var(--red); }
+.tf-btn[disabled] { cursor: default; }
+
+.quiz-result { display: none; padding: 28px 16px; text-align: center; }
+.quiz-result.visible { display: block; }
+.result-score {
+  font-family: 'Syne', sans-serif; font-size: 68px; font-weight: 800; line-height: 1;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin: 14px 0 8px; filter: drop-shadow(0 0 20px rgba(61,142,240,0.2));
+}
+.quiz-result.visible .result-score { animation: countUp 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.1s both; }
+.quiz-result.visible .result-stats { animation: fadeSlideUp 0.4s ease 0.3s both; }
+.quiz-result.visible .restart-btn { animation: fadeSlideUp 0.4s ease 0.45s both; }
+.result-label { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+.result-stats { display: flex; gap: 10px; justify-content: center; margin-bottom: 28px; }
+.stat-chip { padding: 9px 18px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; border: 1px solid transparent; }
+.stat-chip.green { background: rgba(48,212,160,0.1); color: var(--green); border-color: rgba(48,212,160,0.2); }
+.stat-chip.red { background: rgba(240,96,96,0.1); color: var(--red); border-color: rgba(240,96,96,0.2); }
+.restart-btn {
+  padding: 15px 36px; border-radius: var(--radius-sm); border: none;
+  background: linear-gradient(135deg, var(--accent) 0%, #2a7de0 100%); color: #fff;
+  font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  box-shadow: 0 4px 18px rgba(61,142,240,0.35); min-height: 52px; transition: transform 0.15s;
+}
+.restart-btn:active { transform: scale(0.97); }
+
+.confirm-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 20px; animation: fadeIn 0.2s ease;
+}
+.confirm-box {
+  background: var(--surface); border: 1px solid var(--border2); border-radius: 20px;
+  padding: 28px 24px; max-width: 320px; width: 100%; text-align: center;
+  box-shadow: var(--shadow-lg); animation: scaleIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  transform-origin: center bottom;
+}
+.confirm-icon { font-size: 36px; margin-bottom: 14px; }
+.confirm-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.confirm-msg { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 22px; }
+.confirm-msg strong { color: var(--text); }
+.confirm-btns { display: flex; gap: 10px; }
+.confirm-no {
+  flex: 1; padding: 13px; border-radius: var(--radius-sm); border: 1px solid var(--border2);
+  background: var(--surface2); color: var(--text); font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; min-height: 48px; transition: all 0.18s;
+}
+.confirm-no:hover { border-color: var(--accent); }
+.confirm-yes {
+  flex: 1; padding: 13px; border-radius: var(--radius-sm); border: none;
+  background: linear-gradient(135deg, var(--red) 0%, #d04040 100%); color: #fff;
+  font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  min-height: 48px; box-shadow: 0 3px 12px rgba(240,96,96,0.3); transition: transform 0.15s;
+}
+.confirm-yes:active { transform: scale(0.97); }
+
+.quiz-options .quiz-opt:nth-child(1) { animation: fadeSlideUp 0.2s ease 0.05s both; }
+.quiz-options .quiz-opt:nth-child(2) { animation: fadeSlideUp 0.2s ease 0.1s both; }
+.quiz-options .quiz-opt:nth-child(3) { animation: fadeSlideUp 0.2s ease 0.15s both; }
+.quiz-options .quiz-opt:nth-child(4) { animation: fadeSlideUp 0.2s ease 0.2s both; }
+.tf-buttons .tf-btn:nth-child(1) { animation: fadeSlideUp 0.2s ease 0.05s both; }
+.tf-buttons .tf-btn:nth-child(2) { animation: fadeSlideUp 0.2s ease 0.1s both; }
+.quiz-explanation.visible { animation: fadeSlideUp 0.25s ease both; }
+
+@keyframes fadeSlideUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes scaleIn { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
+@keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
+@keyframes countUp { from { opacity:0; transform:scale(0.7) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+@keyframes pulseIn { 0% { opacity:0; transform:scale(0.95) translateY(6px); } 60% { transform:scale(1.02) translateY(0); } 100% { opacity:1; transform:scale(1) translateY(0); } }
+
+.main::-webkit-scrollbar { width: 3px; }
+.main::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+.filter-row::-webkit-scrollbar { height: 0; }
+
+@media (min-width: 600px) {
+  body { max-width: 480px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+  body::before { background-size: 40px 40px; }
+}
+@media (max-width: 360px) {
+  .topbar h1 { font-size: 15px; }
+  .fc-btn { font-size: 13px; }
+  .result-score { font-size: 52px; }
+}
+@supports (-webkit-touch-callout: none) { .main { height: -webkit-fill-available; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>General <span>Anatomy</span></h1>
+  <span class="badge" id="sectionBadge">Flash Cards</span>
+</div>
+
+<div class="main">
+
+  <!-- ════ FLASH CARDS SECTION ════ -->
+  <div class="section active" id="section-fc">
+    <div class="sheet-tabs">
+      <button class="sheet-tab active" id="fcSheetIntro" onclick="setFCSheet('intro')">📖 Introduction</button>
+      <button class="sheet-tab" id="fcSheetHN" onclick="setFCSheet('hn')">🧠 HEAD&amp;NECK P2</button>
+      <button class="sheet-tab" id="fcSheetHN3" onclick="setFCSheet('hn3')">🔬 HEAD&amp;NECK P3</button>
+      <button class="sheet-tab" id="fcSheetHN4" onclick="setFCSheet('hn4')">🫁 HEAD&amp;NECK P4</button>
+    </div>
+    <div class="filter-row" id="fcFilterRow"></div>
+    <div class="fc-counter">Card <strong id="fcCurrent">1</strong> of <strong id="fcTotal">1</strong></div>
+    <div class="fc-scene" id="fcScene" onclick="flipCard()">
+      <div class="fc-card" id="fcCard">
+        <div class="fc-front">
+          <div class="fc-tag" id="fcTag">—</div>
+          <p class="fc-question" id="fcQuestion">Loading...</p>
+          <p class="fc-tap-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M9 18l6-6-6-6"/></svg>
+            Tap to reveal answer
+          </p>
+        </div>
+        <div class="fc-back">
+          <p class="fc-answer-label">Answer</p>
+          <p class="fc-answer" id="fcAnswer">—</p>
+        </div>
+      </div>
+    </div>
+    <div class="fc-controls">
+      <button class="fc-btn" onclick="prevCard()">← Prev</button>
+      <button class="fc-btn primary" onclick="nextCard()">Next →</button>
+    </div>
+    <div class="fc-shuffle-row">
+      <button class="fc-small-btn" onclick="shuffleCards()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Shuffle
+      </button>
+      <button class="fc-small-btn" onclick="resetCards()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- ════ QUIZ SECTION ════ -->
+  <div class="section" id="section-quiz">
+    <div id="quizStart">
+      <div class="quiz-start">
+        <h2>Quiz Mode</h2>
+        <p>Choose a sheet and topic to begin.</p>
+      </div>
+      <div class="sheet-tabs">
+        <button class="sheet-tab active" id="qSheetIntro" onclick="setQuizSheet('intro')">📖 Introduction</button>
+        <button class="sheet-tab" id="qSheetHN" onclick="setQuizSheet('hn')">🧠 HEAD&amp;NECK P2</button>
+        <button class="sheet-tab" id="qSheetHN3" onclick="setQuizSheet('hn3')">🔬 HEAD&amp;NECK P3</button>
+        <button class="sheet-tab" id="qSheetHN4" onclick="setQuizSheet('hn4')">🫁 HEAD&amp;NECK P4</button>
+      </div>
+      <div class="start-options" id="quizTopicButtons"></div>
+    </div>
+
+    <div id="quizActive" style="display:none;">
+      <div class="quiz-header">
+        <button class="quiz-back-btn" onclick="quizBack()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back
+        </button>
+        <span class="quiz-q-num" id="qNum">Q1 / 1</span>
+        <span class="quiz-score-chip" id="qScore">✓ 0</span>
+      </div>
+      <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="qProgress" style="width:0%"></div></div>
+      <div class="quiz-card">
+        <span class="quiz-type-badge" id="qTypeBadge">T/F</span>
+        <p class="quiz-question" id="qQuestion" style="margin-top:10px;">—</p>
+        <div class="quiz-options" id="qOptions"></div>
+        <div class="quiz-explanation" id="qExplanation"></div>
+      </div>
+      <button class="quiz-next-btn" id="qNextBtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+
+    <div id="quizResult" class="quiz-result">
+      <p style="color:var(--muted);font-size:13px;">Your Score</p>
+      <div class="result-score" id="rScore">0%</div>
+      <p class="result-label" id="rLabel">—</p>
+      <div class="result-stats">
+        <div class="stat-chip green" id="rCorrect">✓ 0 Correct</div>
+        <div class="stat-chip red" id="rWrong">✗ 0 Wrong</div>
+      </div>
+      <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Confirm Modal -->
+<div id="confirmModal" class="confirm-overlay" style="display:none;" onclick="closeConfirm(event)">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠️</div>
+    <p class="confirm-title">Leave Quiz?</p>
+    <p class="confirm-msg">You've answered <strong id="confirmCount">0</strong> questions. Progress will be lost.</p>
+    <div class="confirm-btns">
+      <button class="confirm-no" onclick="closeConfirmModal()">Continue</button>
+      <button class="confirm-yes" onclick="confirmExit()">Leave</button>
+    </div>
+  </div>
+</div>
+
+<nav class="bottomnav">
+  <button class="navbtn active" id="nav-fc" onclick="showSection('fc')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+    </svg>Flash Cards
+  </button>
+  <button class="navbtn" id="nav-quiz" onclick="showSection('quiz')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>Quiz
+  </button>
+</nav>
+
+<script>
+/* ══════════════════════════════════════════════════
+   INTRODUCTION — FLASH CARDS (47)
+══════════════════════════════════════════════════ */
+const INTRO_SKIN = [
+  {cat:'skin',q:'Skin = what % of body weight?',a:'8% | ~2 m² surface area'},
+  {cat:'skin',q:'Most IMPORTANT function of the skin?',a:'Sensation by nerve endings (pain · touch · temperature)'},
+  {cat:'skin',q:'DEEPEST structure in the skin?',a:'Sweat glands (Sudoriferous glands)'},
+  {cat:'skin',q:'Montgomery glands = ?',a:'Sebaceous glands well-developed in the AREOLA'},
+  {cat:'skin',q:'4 appendages of the skin?',a:'① Nail  ② Hair & follicles  ③ Sebaceous glands  ④ Sweat glands'},
+  {cat:'skin',q:'2 types of sweat glands?',a:'Eccrine + Apocrine'},
+  {cat:'skin',q:'Apocrine glands found WHERE?',a:'Axilla · Groin · Perineum'},
+  {cat:'skin',q:'Sites with NO hair? (5)',a:'Palms & soles · Sides of fingers/toes/feet · Lips · Glans penis · Clitoris'},
+  {cat:'skin',q:'Sites with NO sweat glands? (4)',a:'Nail beds · Red margin of lips · Glans penis · Clitoris'},
+  {cat:'skin',q:'Sites with BOTH no hair & no sweat glands?',a:'Glans penis & Clitoris'},
+  {cat:'skin',q:'Red margin of lips lacks?',a:'Sweat glands (mucocutaneous junction)'},
+  {cat:'skin',q:'Total skin functions?',a:'11 functions'},
+];
+const INTRO_MUSCLE = [
+  {cat:'muscle',q:'3 types of muscle?',a:'① Skeletal  ② Smooth  ③ Cardiac'},
+  {cat:'muscle',q:'Skeletal muscle = ?',a:'Striated + Voluntary'},
+  {cat:'muscle',q:'Smooth muscle = ?',a:'Unstriated + Involuntary (also called Plain / Visceral)'},
+  {cat:'muscle',q:'Cardiac muscle = ?',a:'Striated + Involuntary'},
+  {cat:'muscle',q:'Striated BUT involuntary = ?',a:'Cardiac muscle ONLY'},
+  {cat:'muscle',q:'The ONLY unstriated muscle?',a:'Smooth muscle'},
+];
+const INTRO_BONE = [
+  {cat:'bone',q:'Define bone.',a:'Specialized connective tissue — dense, vascularized, full of minerals'},
+  {cat:'bone',q:'Adult vs neonate bone count?',a:'Adult: 206 | Neonate: ~300 (bones fuse during development)'},
+  {cat:'bone',q:'RBCs are produced by?',a:'Bone marrow'},
+  {cat:'bone',q:'6 functions of bone?',a:'① Levers & contour  ② Protect organs  ③ RBC production  ④ Ca storage  ⑤ Movement  ⑥ Muscle attachment'},
+  {cat:'bone',q:'6 types of bone by SHAPE?',a:'Long · Short · Flat · Irregular · Pneumatic · Sesamoid'},
+  {cat:'bone',q:'Long bone structure?',a:'2 Epiphyses + 1 Diaphysis (shaft)'},
+  {cat:'bone',q:'Long bone examples?',a:'Humerus · Femur · Tibia · Fibula · Radius · Ulna'},
+  {cat:'bone',q:'Short bone — has a marrow cavity?',a:'NO marrow cavity (may contain red marrow)  e.g. Carpal & tarsal'},
+  {cat:'bone',q:'Flat bone structure?',a:'Compact + Cancellous + Compact (sandwich of 2 tables with spongy bone)'},
+  {cat:'bone',q:'Flat bone examples?',a:'Scapula · Skull vault · Ribs'},
+  {cat:'bone',q:'Irregular bone features?',a:'Ill-defined shape due to bony processes  e.g. Vertebrae · Skull base · Hip bones'},
+  {cat:'bone',q:'Pneumatic bone = ?',a:'Air cavity INSIDE the bone  e.g. Paranasal sinuses (maxillary, frontal, sphenoidal, ethmoidal)'},
+  {cat:'bone',q:'4 paranasal sinuses?',a:'① Maxillary  ② Frontal  ③ Sphenoidal  ④ Ethmoidal (+ mastoid)'},
+  {cat:'bone',q:'Sesamoid bone = found inside?',a:'Inside a TENDON — modifies pressure & friction'},
+  {cat:'bone',q:'Sesamoid = special type of?',a:'Short bone  e.g. Patella · Pisiform · Fabella'},
+  {cat:'bone',q:'Metacarpals & phalanges classified as?',a:'Long bones (miniature long bones)'},
+  {cat:'bone',q:'Short bone examples?',a:'Carpal & tarsal  (Scaphoid · Lunate · Calcaneus · Talus)'},
+  {cat:'bone',q:'Sesamoid examples?',a:'Patella · Pisiform · Fabella'},
+  {cat:'bone',q:'Which bone type has NO bone marrow cavity?',a:'Short bones (and sesamoid bones)'},
+];
+const INTRO_JOINT = [
+  {cat:'joint',q:'7 types of synovial joints?',a:'Hinge · Plane · Pivot · Ball & Socket · Ellipsoid · Saddle · Condyloid'},
+  {cat:'joint',q:'Hinge joint examples?',a:'Elbow + Ankle (knee = modified hinge)'},
+  {cat:'joint',q:'Plane joint = also called?',a:'Gliding joint  e.g. Sternoclavicular · Intertarsal'},
+  {cat:'joint',q:'Pivot joint examples?',a:'Atlantoaxial + Radio-ulnar'},
+  {cat:'joint',q:'Ball & socket examples?',a:'Shoulder + Hip'},
+  {cat:'joint',q:'Ellipsoid joint example?',a:'Wrist joint'},
+  {cat:'joint',q:'Saddle joint example?',a:'CMC joint of the THUMB'},
+  {cat:'joint',q:'Condyloid joint example?',a:'MCP joints of all fingers'},
+  {cat:'joint',q:'Knee = modified...? (2 answers)',a:'① Modified Hinge  ② May be Condyloid'},
+  {cat:'joint',q:'Atlantoaxial joint allows what movement?',a:'Rotation around a single axis (pivot joint — C1 on C2)'},
+];
+
+/* ══════════════════════════════════════════════════
+   HEAD & NECK — FLASH CARDS (120)
+══════════════════════════════════════════════════ */
+const HN_SCALP = [
+  {cat:'scalp',q:'Define scalp.',a:'Soft tissue covering cranial vault + forehead.'},
+  {cat:'scalp',q:'Scalp anterior limit?',a:'Eyebrow.'},
+  {cat:'scalp',q:'Scalp posterior limit?',a:'Superior nuchal line + external occipital protuberance.'},
+  {cat:'scalp',q:'Scalp lateral limit?',a:'Superior temporal line.'},
+  {cat:'scalp',q:'5 layers of scalp — mnemonic?',a:'S — Skin\nC — Connective tissue (fibro-fatty)\nA — Aponeurotic layer (galea)\nL — Loose areolar tissue ← DANGEROUS AREA\nP — Pericranium'},
+  {cat:'scalp',q:'"Scalp proper" = ?',a:'Layers 1+2+3 (S+C+A) — firmly united and move as ONE unit.'},
+  {cat:'scalp',q:'Layer 2 special feature?',a:'Fibrous septa connect skin to aponeurosis. Rich in blood vessels with FREE anastomosis. ⚠ Vessels can\'t retract → scalp wounds bleed heavily.'},
+  {cat:'scalp',q:'Layer 3 — full name?',a:'Aponeurotic layer (Epicranial aponeurosis / galea aponeurotica). Thin tendinous sheath uniting occipital + frontal bellies.'},
+  {cat:'scalp',q:'Layer 4 — why is it the DANGEROUS AREA?',a:'Contains VALVELESS emissary veins connecting scalp veins to intracranial sinuses → infection spreads intracranially.'},
+  {cat:'scalp',q:'Layer 5 — pericranium attachment rule?',a:'FIRMLY attached to sutures. LOOSELY attached to bone.'},
+  {cat:'scalp',q:'Occipitofrontalis — bellies?',a:'2 frontal bellies (large + fused)\n2 occipital bellies (small + separated)\nConnected by epicranial aponeurosis.'},
+  {cat:'scalp',q:'Occipitofrontalis — origin + insertion?',a:'Frontal belly: skin of eyebrows → epicranial aponeurosis.\nOccipital belly: highest nuchal line → epicranial aponeurosis.'},
+  {cat:'scalp',q:'Occipitofrontalis — nerve supply?',a:'Frontal belly: Temporal branch of CN VII.\nOccipital belly: Posterior auricular branch of CN VII.'},
+  {cat:'scalp',q:'Occipitofrontalis — action?',a:'Raises eyebrows + makes transverse wrinkles on forehead. Moves first 3 layers of scalp on the skull.'},
+  {cat:'scalp',q:'5 arteries of scalp?',a:'Supratrochlear · Supraorbital · Superficial temporal · Posterior auricular · Occipital'},
+  {cat:'scalp',q:'Scalp arteries from ICA (via ophthalmic)?',a:'Supratrochlear + Supraorbital (FIRST 2 = ICA)'},
+  {cat:'scalp',q:'Scalp arteries from ECA?',a:'Superficial temporal + Posterior auricular + Occipital (LAST 3 = ECA)'},
+  {cat:'scalp',q:'5 veins of scalp?',a:'Supraorbital · Supratrochlear · Superficial temporal · Posterior auricular · Occipital'},
+  {cat:'scalp',q:'Scalp veins — clinical importance?',a:'Anastomose freely + connected to intracranial sinuses via VALVELESS emissary veins → infection spreads both ways.'},
+  {cat:'scalp',q:'4 lymph node groups draining scalp?',a:'Submandibular LN → anterior scalp + forehead\nSuperficial parotid LN → lateral scalp (above ear)\nMastoid LN → above + behind ear\nOccipital LN → back of scalp'},
+  {cat:'scalp',q:'10 sensory nerves of scalp — FRONT of ear (5)?',a:'① Supratrochlear (V1)  ② Supraorbital (V1)\n③ Zygomaticotemporal (V2)  ④ Auriculotemporal (V3)\n⑤ Temporal br. CN VII (MOTOR to frontal belly)'},
+  {cat:'scalp',q:'10 sensory nerves of scalp — BEHIND ear (5)?',a:'⑥ Post. auricular CN VII (MOTOR to occipital belly)\n⑦ Lesser occipital (C2 cervical plexus)\n⑧ Greater occipital (posterior ramus C2)\n⑨ Third occipital (posterior ramus C3)\n⑩ Great auricular (C2+C3 cervical plexus)'},
+];
+const HN_FACE = [
+  {cat:'face',q:'Boundaries of face?',a:'Above: hairline / eyebrow\nBelow: base of mandible + chin\nSides: auricles'},
+  {cat:'face',q:'All muscles of facial expression supplied by?',a:'Facial nerve (CN VII) — ALL without exception.'},
+  {cat:'face',q:'4 groups of muscles of expression?',a:'Nasal · Orbital · Auricular · Oral'},
+  {cat:'face',q:'Nasal group — 3 muscles?',a:'Depressor septi · Nasalis (alar + transverse) · Procerus'},
+  {cat:'face',q:'Orbital group — 4 muscles?',a:'Orbicularis oculi · Occipitofrontalis · Corrugator supercilii · Depressor supercilii'},
+  {cat:'face',q:'Auricular group — 3 muscles?',a:'Auricularis anterior · Auricularis posterior · Auricularis superior'},
+  {cat:'face',q:'Oral group — how many muscles?',a:'12 muscles (orbicularis oris, buccinator, zygomaticus major/minor, risorius, platysma, mentalis, etc.)'},
+  {cat:'face',q:'Main 2 arteries supplying the face?',a:'Facial artery + Superficial temporal artery'},
+  {cat:'face',q:'Facial artery — origin?',a:'Branch of ECA (external carotid artery).'},
+  {cat:'face',q:'5 branches of facial artery (proximal → terminal)?',a:'① Submental  ② Inferior labial  ③ Superior labial\n④ Lateral nasal  ⑤ Angular (terminal)'},
+  {cat:'face',q:'Angular artery anastomoses with?',a:'Terminal branches of ophthalmic artery (from ICA).'},
+  {cat:'face',q:'Face sensory supply — which nerve?',a:'Trigeminal nerve (V) — all 3 divisions.'},
+  {cat:'face',q:'Face motor supply — which nerve?',a:'Facial nerve (CN VII) — supplies all muscles of expression.'},
+  {cat:'face',q:'Ophthalmic V1 supplies skin of?',a:'Forehead · upper eyelid · dorsum of nose · cornea.'},
+  {cat:'face',q:'Mandibular V3 supplies skin of?',a:'Lower lip · chin · lower cheek · angle of mandible.'},
+];
+const HN_PAROTID = [
+  {cat:'parotid',q:'Parotid gland — type + shape?',a:'Largest salivary gland · SEROUS · Three-sided pyramid.'},
+  {cat:'parotid',q:'Parotid location?',a:'Below ext. auditory meatus, behind ramus of mandible.\nExtends: zygomatic arch → upper neck.'},
+  {cat:'parotid',q:'What divides parotid into superficial + deep?',a:'Branches of FACIAL nerve (CN VII).'},
+  {cat:'parotid',q:'3 processes of parotid gland?',a:'① Glenoid — between ext. acoustic meatus + TMJ (→ pain in mumps!)\n② Pterygoid — between med. pterygoid + ramus\n③ Facial — extends along duct (may become accessory gland)'},
+  {cat:'parotid',q:'Parotid superficial surface relations?',a:'Skin · Superficial fascia · Facial branches of great auricular nerve · Superficial parotid LN.'},
+  {cat:'parotid',q:'Parotid posteromedial surface relations?',a:'Mastoid process · SCM · Styloid process + muscles · ECA (grooves this surface) · ICA + IJV.'},
+  {cat:'parotid',q:'Contents of parotid (superficial → deep)?',a:'① Facial nerve (CN VII)\n② Retromandibular vein\n③ External carotid artery (ECA)'},
+  {cat:'parotid',q:'Retromandibular vein — formed by?',a:'Maxillary vein + Superficial temporal vein.'},
+  {cat:'parotid',q:'Parotid duct (Stensen\'s) — dimensions?',a:'5 cm long · 3 mm diameter.'},
+  {cat:'parotid',q:'Parotid duct — course?',a:'Emerges from anterior border → over lateral surface of masseter → turns deep → pierces buccinator → opens in vestibule.'},
+  {cat:'parotid',q:'Parotid duct opens opposite?',a:'UPPER 2nd molar tooth.'},
+  {cat:'parotid',q:'Parotid duct pierces 4 layers?',a:'① Buccal fat  ② Buccopharyngeal fascia\n③ Buccinator muscle  ④ Buccal mucosa'},
+  {cat:'parotid',q:'Parasympathetic secretomotor pathway to parotid?',a:'CN IX → tympanic branch → lesser petrosal nerve → otic ganglion → postganglionic via auriculotemporal nerve.'},
+  {cat:'parotid',q:'Why does parotid swelling (mumps) cause pain on eating?',a:'Glenoid process lodged between ext. acoustic meatus + TMJ. Swelling compresses during TMJ movement → pain.'},
+  {cat:'parotid',q:'Accessory parotid gland — where?',a:'Above parotid duct, separated from main gland (part of facial process that separates).'},
+  {cat:'parotid',q:'What divides parotid vs what is secretomotor to it?',a:'DIVIDES: Facial nerve (CN VII).\nSECRETOMOTOR: CN IX → otic ganglion → auriculotemporal.'},
+  {cat:'parotid',q:'Superior surface of parotid relations?',a:'Cartilaginous + osseous parts of external acoustic meatus · TMJ.'},
+];
+const HN_FACIALN = [
+  {cat:'facialN',q:'Facial nerve — 2 components?',a:'① Large motor root → muscles of facial expression.\n② Intermediate nerve → taste + parasympathetic.'},
+  {cat:'facialN',q:'Facial nerve enters face via?',a:'Stylomastoid foramen.'},
+  {cat:'facialN',q:'After stylomastoid, before parotid — branches?',a:'Posterior auricular nerve · Nerve to post. belly of digastric · Nerve to stylohyoid.'},
+  {cat:'facialN',q:'Facial nerve — intracranial branches (inside middle ear)?',a:'① Chorda tympani\n② Nerve to stapedius\n③ Greater superficial petrosal nerve'},
+  {cat:'facialN',q:'Chorda tympani carries?',a:'Taste from anterior 2/3 tongue.\nParasympathetic to submandibular + sublingual glands.'},
+  {cat:'facialN',q:'Greater superficial petrosal nerve carries?',a:'Parasympathetic to lacrimal gland + glands of nasal cavity.'},
+  {cat:'facialN',q:'Facial nerve terminal branches in parotid — 5?',a:'Temporal · Zygomatic · Buccal · Mandibular · Cervical\n(Mnemonic: Two Zebras Bit My Cat)'},
+  {cat:'facialN',q:'Marginal mandibular branch of CN VII — clinical importance?',a:'Damaged in parotid surgery or lower face incisions → inability to depress lower lip (weak smile).'},
+  {cat:'facialN',q:'Facial nerve passes through parotid between?',a:'Superficial + deep parts of parotid\n(divides gland but is NOT secretomotor to it).'},
+  {cat:'facialN',q:'Lesser petrosal nerve = branch of which cranial nerve?',a:'CN IX (glossopharyngeal) — NOT CN VII.'},
+  {cat:'facialN',q:'Terminal branches of CN VII supply?',a:'All muscles of FACIAL EXPRESSION (mimetic muscles).'},
+];
+const HN_MAST = [
+  {cat:'mast',q:'4 muscles of mastication?',a:'Temporalis · Masseter · Medial pterygoid · Lateral pterygoid.'},
+  {cat:'mast',q:'All mastication muscles supplied by?',a:'Mandibular nerve V3.'},
+  {cat:'mast',q:'TEMPORALIS — Origin?',a:'Temporal fossa + temporal fascia + inferior temporal line.'},
+  {cat:'mast',q:'TEMPORALIS — Insertion?',a:'Tip of coronoid process + anterior border of ramus of mandible\n(passes deep to zygomatic arch).'},
+  {cat:'mast',q:'TEMPORALIS — Nerve?',a:'Deep temporal branches → anterior division of V3.'},
+  {cat:'mast',q:'TEMPORALIS — Action?',a:'Anterior fibers: ELEVATE mandible.\nPosterior fibers: RETRACT mandible.'},
+  {cat:'mast',q:'MASSETER — Origin (2 heads)?',a:'Superficial fibers: lower border of zygomatic arch.\nDeep fibers: medial surface of zygomatic arch.'},
+  {cat:'mast',q:'MASSETER — Insertion?',a:'Outer surface of ramus of mandible.'},
+  {cat:'mast',q:'MASSETER — Nerve?',a:'Masseteric nerve → anterior division of V3.'},
+  {cat:'mast',q:'MASSETER — Action?',a:'Deep fibers: ELEVATE mandible.\nSuperficial fibers: PROTRUDE mandible.\n= ANTIGRAVITY muscle.'},
+  {cat:'mast',q:'MEDIAL PTERYGOID — Origin (2 heads)?',a:'Superficial head: maxillary tuberosity.\nDeep head: medial surface of lateral pterygoid plate.'},
+  {cat:'mast',q:'MEDIAL PTERYGOID — Insertion?',a:'Medial surface of angle of mandible.'},
+  {cat:'mast',q:'MEDIAL PTERYGOID — Nerve?',a:'TRUNK of mandibular nerve V3\n(also supplies tensor palati + tensor tympani).'},
+  {cat:'mast',q:'MEDIAL PTERYGOID — Action?',a:'Elevation + Protraction of mandible.\nSide-to-side movement (chewing).'},
+  {cat:'mast',q:'LATERAL PTERYGOID — Origin (2 heads)?',a:'Upper head: greater wing of sphenoid (infratemporal surface).\nLower head: lateral pterygoid plate (lateral surface).'},
+  {cat:'mast',q:'LATERAL PTERYGOID — Insertion?',a:'Pterygoid fovea (front of neck of mandible)\n+ Articular disc + capsule of TMJ.'},
+  {cat:'mast',q:'LATERAL PTERYGOID — Nerve?',a:'Anterior division of mandibular nerve V3.'},
+  {cat:'mast',q:'LATERAL PTERYGOID — Action?',a:'Depression + protraction of TMJ (pulls neck + disc forward).\nSide-to-side movement.\n= MAIN OPENER of mouth.'},
+  {cat:'mast',q:'Which mastication muscle RETRACTS mandible?',a:'Temporalis — posterior fibers.'},
+  {cat:'mast',q:'Elevators of mandible (3)?',a:'Temporalis (ant. fibers) · Masseter · Medial pterygoid.'},
+];
+const HN_MAXA = [
+  {cat:'maxA',q:'Maxillary artery — origin?',a:'Terminal branch of ECA.\nOrigin: within parotid, behind neck of mandible.'},
+  {cat:'maxA',q:'Maxillary artery — course summary?',a:'Forward medial to neck of mandible → infratemporal fossa → between 2 heads of lateral pterygoid → pterygomaxillary fissure → pterygopalatine fossa.'},
+  {cat:'maxA',q:'3 parts of maxillary artery?',a:'1st (mandibular): before lateral pterygoid.\n2nd (pterygoid): on lateral pterygoid — mainly MUSCULAR.\n3rd (pterygopalatine): beyond lateral pterygoid.'},
+  {cat:'maxA',q:'5 branches of 1st part (mandibular)?',a:'① Inferior alveolar artery\n② Middle meningeal artery\n③ Accessory meningeal artery\n④ Deep auricular artery\n⑤ Anterior tympanic artery'},
+  {cat:'maxA',q:'Inferior alveolar artery — course + end?',a:'Enters mandibular foramen → runs in mandible → ends as mental branch (exits mental foramen).'},
+  {cat:'maxA',q:'Middle meningeal artery — clinical importance?',a:'Passes through foramen spinosum → middle cranial fossa → supplies dura mater.\n⚠ Damage → extradural haematoma.'},
+  {cat:'maxA',q:'4 branches of 2nd part (pterygoid — muscular)?',a:'① Deep temporal artery (to temporalis)\n② Pterygoid branches (to medial + lateral pterygoid)\n③ Masseteric artery (to masseter)\n④ Buccal artery (to buccinator)'},
+  {cat:'maxA',q:'6 branches of 3rd part (pterygopalatine)?',a:'① Infraorbital artery\n② Sphenopalatine artery\n③ Posterior superior alveolar artery\n④ Greater palatine artery\n⑤ Artery of pterygoid canal\n⑥ Pharyngeal artery'},
+  {cat:'maxA',q:'Sphenopalatine artery supplies?',a:'Main arterial supply of NASAL CAVITY.\nEnters via sphenopalatine foramen.'},
+  {cat:'maxA',q:'Greater palatine artery destination?',a:'Through greater palatine foramen → supplies HARD PALATE.'},
+  {cat:'maxA',q:'Posterior superior alveolar artery supplies?',a:'Upper molar + premolar region (before infraorbital canal).'},
+  {cat:'maxA',q:'Accessory meningeal artery passes through?',a:'Foramen ovale → supplies dura + trigeminal cave.'},
+  {cat:'maxA',q:'Infraorbital artery terminal branches?',a:'ASA (anterior superior alveolar) + MSA (middle superior alveolar) + terminal branches to orbit, nasal, labial, palpebral.'},
+  {cat:'maxA',q:'Maxillary artery in infratemporal fossa lies between?',a:'Auriculotemporal nerve (above) + maxillary vein (below).'},
+  {cat:'maxA',q:'Which part of maxillary artery passes between 2 heads of lateral pterygoid?',a:'2nd part (pterygoid part).'},
+];
+const HN_V3 = [
+  {cat:'v3',q:'Mandibular nerve — exit from skull?',a:'Foramen ovale (accompanied by motor root → forms mixed nerve).'},
+  {cat:'v3',q:'V3 lies between?',a:'Upper head of lateral pterygoid (below) + otic ganglion (medial).'},
+  {cat:'v3',q:'2 branches from TRUNK of V3 (before dividing)?',a:'① Meningeal branch (nervus spinosus) — passes back through foramen ovale/spinosum.\n② Nerve to medial pterygoid — also supplies tensor palati + tensor tympani.'},
+  {cat:'v3',q:'Anterior division V3 — character + rule?',a:'Smaller division.\nALL MOTOR except ONE sensory = buccal nerve.'},
+  {cat:'v3',q:'4 branches of anterior division V3?',a:'① Nerve to lateral pterygoid (motor)\n② Deep temporal nerves (motor → temporalis)\n③ Nerve to masseter (motor)\n④ Buccal nerve (SENSORY only)'},
+  {cat:'v3',q:'Buccal nerve — what does it supply?',a:'Skin + mucosa of cheek (buccal region).\n= Only sensory branch of anterior division V3.'},
+  {cat:'v3',q:'Posterior division V3 — character + rule?',a:'Larger division.\nALL SENSORY except nerve to mylohyoid (motor exception).'},
+  {cat:'v3',q:'3 branches of posterior division V3?',a:'① Auriculotemporal nerve\n② Inferior alveolar nerve\n③ Lingual nerve'},
+  {cat:'v3',q:'Auriculotemporal nerve — special function?',a:'Sensory to scalp + carries postganglionic parasympathetic from otic ganglion → parotid gland.'},
+  {cat:'v3',q:'Inferior alveolar nerve — motor branch?',a:'Nerve to mylohyoid (motor to mylohyoid + ant. belly of digastric).\nGiven off BEFORE entering mandibular foramen.'},
+  {cat:'v3',q:'Inferior alveolar nerve — enters via? Exits via?',a:'Enters: mandibular foramen.\nExits: mental foramen → becomes mental nerve (supplies lower lip + chin skin).'},
+  {cat:'v3',q:'Lingual nerve — joined by? What does it carry?',a:'Joined by chorda tympani (CN VII) → carries:\n① Taste from anterior 2/3 of tongue.\n② Parasympathetic to submandibular + sublingual glands.'},
+];
+const HN_DEV = [
+  {cat:'dev',q:'Face develops from how many processes?',a:'5 facial processes surrounding the stomodium (future mouth).'},
+  {cat:'dev',q:'Name the 5 facial processes?',a:'Frontonasal process (×1) + Maxillary process (×2) + Mandibular process (×2).'},
+  {cat:'dev',q:'Derivatives of FRONTONASAL process?',a:'Frontal part: forehead · upper eyelid · nasal bridge.\nLateral nasal: ala of nose.\nMedial nasal: tip of nose · nasal septum · PHILTRUM + intermaxillary segment.\nSensory: V1 (ophthalmic).'},
+  {cat:'dev',q:'Derivatives of MAXILLARY process?',a:'Lower eyelid · upper cheek · upper lip LATERAL to philtrum · intermaxillary segment (part).\nSensory: V2 (maxillary).'},
+  {cat:'dev',q:'Derivatives of MANDIBULAR process?',a:'Lower lip (by fusion of 2 mandibular processes) + lower part of cheek.\nSensory: V3 (mandibular).'},
+  {cat:'dev',q:'Philtrum of upper lip — from which process?',a:'Medial nasal process (part of frontonasal).\n⚠ NOT maxillary process!'},
+  {cat:'dev',q:'Rule: which trigeminal division supplies which process?',a:'Frontonasal → V1 (ophthalmic)\nMaxillary → V2 (maxillary)\nMandibular → V3 (mandibular)'},
+  {cat:'dev',q:'MASTER EXAM TRAPS — 10 classic mistakes?',a:'① Dangerous area = layer 4 (LOOSE areolar)\n② Pericranium = FIRMLY to sutures\n③ Supratrochlear+Supraorbital = ICA\n④ Parotid divided by FACIAL nerve\n⑤ Parotid secretomotor = CN IX\n⑥ Medial pterygoid = TRUNK of V3\n⑦ Lateral pterygoid = DEPRESSOR of mandible\n⑧ Philtrum = medial nasal process\n⑨ Inf. alveolar enters MANDIBULAR foramen\n⑩ Auriculotemporal = V3 branch'},
+];
+
+/* ══════════════════════════════════════════════════
+   INTRODUCTION — QUIZ DATA
+══════════════════════════════════════════════════ */
+const INTRO_SKIN_QUIZ = [
+  {type:'mcq',q:'The skin represents approximately what percentage of body weight?',opts:['4%','6%','8%','10%'],ans:2,exp:'Skin = 8% of body weight with approximately 2 m² surface area.'},
+  {type:'mcq',q:'Which function of the skin is considered the MOST important?',opts:['Vitamin D synthesis & storage','Sensation by nerve endings','Protection from abrasions & bacteria','Regulation of body temperature'],ans:1,exp:'Sensation by nerve endings (pain, touch, temperature) is explicitly labeled the most important function.'},
+  {type:'mcq',q:'The DEEPEST structure in the skin is:',opts:['Sebaceous glands','Hair follicles','Sweat glands (Sudoriferous)','Nails'],ans:2,exp:'Sweat glands (Sudoriferous glands) are the deepest structure in the skin.'},
+  {type:'mcq',q:'Sebaceous glands well developed in the areola are called:',opts:['Meibomian glands','Montgomery glands','Ceruminous glands','Bartholin glands'],ans:1,exp:'Montgomery glands are the well-developed sebaceous glands found in the areola.'},
+  {type:'mcq',q:'Sweat glands are also known as:',opts:['Sebaceous glands','Ceruminous glands','Sudoriferous glands','Mammary glands'],ans:2,exp:'Sudoriferous glands = sweat glands; they include eccrine and apocrine types.'},
+  {type:'mcq',q:'Which of the following is NOT an appendage of the skin?',opts:['Nail','Hair & hair follicles','Melanocytes','Sweat glands'],ans:2,exp:'The 4 appendages are: nails, hair & follicles, sebaceous glands, sweat glands. Melanocytes are epidermis cells, NOT appendages.'},
+  {type:'mcq',q:'Which site has NEITHER hair NOR sweat glands?',opts:['Lips','Nail beds','Glans penis','Palms & soles'],ans:2,exp:'Glans penis (and clitoris) lack BOTH hair and sweat glands.'},
+  {type:'mcq',q:'The red margin of the lips (mucocutaneous junction) lacks:',opts:['Sebaceous glands','Melanocytes','Sweat glands','Keratinocytes'],ans:2,exp:'Red margin of lips = no sweat glands (mucocutaneous junction).'},
+  {type:'mcq',q:'Apocrine sweat glands are found in all of the following EXCEPT:',opts:['Axilla (armpit)','Groin','Perineum','Palms'],ans:3,exp:'Apocrine glands are in axilla, groin & perineum. Palms have eccrine glands only.'},
+  {type:'mcq',q:'Which is NOT a site with no hair?',opts:['Palms','Lips','Clitoris','Scalp'],ans:3,exp:'The scalp is a hairy site. No-hair sites: palms/soles, sides of fingers/toes/feet, lips, glans penis, clitoris.'},
+  {type:'tf',q:'The skin is the second largest organ in the body.',ans:false,exp:'FALSE — Skin is the LARGEST organ in the body.'},
+  {type:'tf',q:'The skin represents approximately 8% of body weight.',ans:true,exp:'TRUE — Skin = 8% of body weight with ~2 m² surface area.'},
+  {type:'tf',q:'Sensation by nerve endings is considered the most important function of the skin.',ans:true,exp:'TRUE — It is explicitly labeled the most important among the 11 functions.'},
+  {type:'tf',q:'Sweat glands are the deepest structure in the skin.',ans:true,exp:'TRUE — Sudoriferous (sweat) glands are the deepest structure.'},
+  {type:'tf',q:'Nail beds contain sweat glands.',ans:false,exp:'FALSE — Nail beds are one of the 4 sites with NO sweat glands.'},
+  {type:'tf',q:'The lips are a site with no hair follicles.',ans:true,exp:'TRUE — Lips have no hair follicles.'},
+  {type:'tf',q:'Palms and soles have hair follicles.',ans:false,exp:'FALSE — Palms & soles are sites with NO hair.'},
+  {type:'tf',q:'Both Glans penis and Clitoris lack hair and sweat glands.',ans:true,exp:'TRUE — Both sites appear in both the no-hair AND no-sweat-gland lists.'},
+  {type:'tf',q:'Apocrine sweat glands are found in the axilla (armpit).',ans:true,exp:'TRUE — Apocrine glands are found in axilla, groin, and perineum.'},
+  {type:'tf',q:'Sebaceous glands in the areola are called Ceruminous glands.',ans:false,exp:'FALSE — They are called Montgomery glands. Ceruminous glands are wax glands of the ear canal.'},
+];
+const INTRO_MUSCLE_QUIZ = [
+  {type:'mcq',q:'Which type of muscle is STRIATED AND INVOLUNTARY?',opts:['Skeletal muscle','Smooth muscle','Cardiac muscle','Both A and C'],ans:2,exp:'Cardiac muscle = striated + involuntary. Skeletal = striated + voluntary. Smooth = unstriated + involuntary.'},
+  {type:'mcq',q:'Smooth muscle is also called:',opts:['Striated muscle','Voluntary muscle','Plain / Visceral muscle','Cardiac muscle'],ans:2,exp:'Smooth muscle = plain = visceral = unstriated = involuntary.'},
+  {type:'mcq',q:'Skeletal muscle is characterized by being:',opts:['Striated and involuntary','Unstriated and voluntary','Striated and voluntary','Unstriated and involuntary'],ans:2,exp:'Skeletal muscle = striated (cross-striations visible) + voluntary (conscious control).'},
+  {type:'tf',q:'Smooth muscle is striated and involuntary.',ans:false,exp:'FALSE — Smooth muscle is UNstriated and involuntary.'},
+  {type:'tf',q:'Cardiac muscle is both striated and involuntary.',ans:true,exp:'TRUE — Cardiac muscle is the only type that is both striated AND involuntary.'},
+  {type:'tf',q:'Skeletal muscle is under voluntary (conscious) control.',ans:true,exp:'TRUE — Skeletal muscle is striated and voluntary.'},
+];
+const INTRO_BONE_QUIZ = [
+  {type:'mcq',q:'The adult human body has approximately how many bones?',opts:['300','206','180','250'],ans:1,exp:'Adults have ~206 bones. Neonates have ~300 (bones fuse during development).'},
+  {type:'mcq',q:'Which is a function of bone marrow?',opts:['Storage of calcium salts','Synthesis of Vitamin D','Production of RBCs','Regulation of blood pressure'],ans:2,exp:'Bone marrow produces RBCs — function #3 of bones.'},
+  {type:'mcq',q:'Long bones consist of:',opts:['Only a shaft (diaphysis)','2 ends (epiphysis) and a shaft (diaphysis)','2 ends only (no shaft)','A flat plate of compact bone'],ans:1,exp:'Long bones = 2 epiphyses + 1 diaphysis (shaft). e.g. humerus, femur.'},
+  {type:'mcq',q:'Short bones typically:',opts:['Have a large medullary canal','Have 2 epiphyses','Have no bone marrow cavity (may contain red marrow)','Contain air cavities'],ans:2,exp:'Short bones have no medullary cavity, though they may contain red marrow.'},
+  {type:'mcq',q:'Flat bones are characterized by:',opts:['Only compact bone throughout','Air cavities inside','Outer & inner compact plates with cancellous bone between','Being inside tendons'],ans:2,exp:'Flat bones = 2 compact tables with spongy (cancellous) bone sandwiched between.'},
+  {type:'mcq',q:'Pneumatic bones contain:',opts:['Red bone marrow','Yellow bone marrow','Air cavities','Dense compact bone only'],ans:2,exp:'Pneumatic = air cavity inside. The 4 paranasal sinuses are classic examples.'},
+  {type:'mcq',q:'Sesamoid bones are a special type of:',opts:['Long bones','Flat bones','Short bones','Irregular bones'],ans:2,exp:'Sesamoid bones develop inside tendons and are classified as a special type of short bone.'},
+  {type:'tf',q:'Neonates have approximately 300 bones.',ans:true,exp:'TRUE — Neonates have ~300 bones; these fuse progressively until adulthood (206 bones).'},
+  {type:'tf',q:'Short bones contain a large medullary (marrow) cavity.',ans:false,exp:'FALSE — Short bones have NO medullary cavity; they may only contain red marrow.'},
+  {type:'tf',q:'The patella is an example of a sesamoid bone.',ans:true,exp:'TRUE — The patella develops inside the quadriceps tendon and is the largest sesamoid bone.'},
+  {type:'tf',q:'Flat bones consist only of compact bone with no cancellous component.',ans:false,exp:'FALSE — Flat bones have outer & inner compact plates WITH cancellous bone sandwiched between.'},
+  {type:'tf',q:'Pneumatic bones contain air cavities inside them.',ans:true,exp:'TRUE — Pneumatic bones contain air cavities (sinuses), e.g. the paranasal sinuses.'},
+];
+const INTRO_JOINT_QUIZ = [
+  {type:'mcq',q:'The knee joint is classified as a modified:',opts:['Pivot joint','Ball & socket joint','Hinge joint','Saddle joint'],ans:2,exp:'Knee = modified hinge joint (may also be considered condyloid). Classic hinge joints = elbow & ankle.'},
+  {type:'mcq',q:'The atlantoaxial joint is an example of:',opts:['Hinge joint','Ball & socket joint','Pivot joint','Plane joint'],ans:2,exp:'Pivot joints allow rotation around a single axis. Atlantoaxial (C1–C2) and radio-ulnar are the key examples.'},
+  {type:'mcq',q:'The carpo-metacarpal joint of the THUMB is classified as:',opts:['Hinge joint','Ellipsoid joint','Condyloid joint','Saddle joint'],ans:3,exp:'Saddle joint → CMC of thumb (permits flexion, extension, abduction, adduction, circumduction).'},
+  {type:'mcq',q:'The shoulder and hip joints are examples of:',opts:['Hinge joints','Plane joints','Ball & socket joints','Pivot joints'],ans:2,exp:'Ball & socket joints allow movement in all planes + rotation. Shoulder & hip are the two main examples.'},
+  {type:'mcq',q:'Metacarpo-phalangeal (MCP) joints of all fingers are classified as:',opts:['Hinge joints','Pivot joints','Condyloid joints','Ellipsoid joints'],ans:2,exp:'MCP joints = condyloid joints (biaxial: flex/extend + abduct/adduct, no rotation). Wrist = ellipsoid.'},
+  {type:'tf',q:'The wrist joint is classified as a pivot joint.',ans:false,exp:'FALSE — Wrist joint = ellipsoid joint. Pivot joints are atlantoaxial & radio-ulnar.'},
+  {type:'tf',q:'The metacarpo-phalangeal joints of all fingers are condyloid joints.',ans:true,exp:'TRUE — MCP joints are condyloid (biaxial movement: flexion/extension + abduction/adduction).'},
+];
+
+/* ══════════════════════════════════════════════════
+   HEAD & NECK — QUIZ DATA
+══════════════════════════════════════════════════ */
+const HN_SCALP_QUIZ = [
+  {type:'mcq',q:"Which layer of the scalp is called the 'Dangerous Area'?",opts:['Skin','Connective tissue','Aponeurotic layer (galea)','Loose areolar tissue'],ans:3,exp:'Layer 4 (loose areolar tissue) contains valveless emissary veins connecting superficial veins to intracranial sinuses → infection spreads intracranially.'},
+  {type:'mcq',q:'The mnemonic SCALP — the letter P stands for:',opts:['Periosteum of temporal bone','Pericranium','Parietal bone','Perichondrium'],ans:1,exp:'P = Pericranium = periosteum covering outer surface of skull bones.'},
+  {type:'mcq',q:'Layers 1+2+3 of the scalp together are called:',opts:['The subaponeurotic space','Scalp proper','The galeal layer','The dangerous zone'],ans:1,exp:'Skin + Connective tissue + Aponeurotic layer move as ONE unit = scalp proper.'},
+  {type:'mcq',q:'Supratrochlear and supraorbital arteries are branches of:',opts:['External carotid artery','Facial artery','Ophthalmic artery (→ ICA)','Maxillary artery'],ans:2,exp:'Both arise from the ophthalmic artery, which is a branch of the internal carotid artery (ICA).'},
+  {type:'mcq',q:'Which arteries supplying the scalp come from the EXTERNAL carotid artery?',opts:['Supratrochlear + Supraorbital + Superficial temporal','Supraorbital + Posterior auricular + Occipital','Superficial temporal + Posterior auricular + Occipital','Supratrochlear + Superficial temporal + Occipital'],ans:2,exp:'The LAST THREE arteries (Superficial temporal, Posterior auricular, Occipital) all arise from ECA.'},
+  {type:'mcq',q:'Regarding the scalp — ALL are TRUE EXCEPT:',opts:['Skin is thick, hairy, rich in sebaceous glands','Connective tissue contains free anastomosis of blood vessels','Layer 4 (loose areolar) is the dangerous area','Pericranium is loosely attached to sutures'],ans:3,exp:'Pericranium is FIRMLY attached to sutures and loosely attached to bone (not the reverse).'},
+  {type:'mcq',q:'Regarding arterial supply of scalp — ALL TRUE EXCEPT:',opts:['There are 5 arteries supplying each side','Supratrochlear arises from ophthalmic artery','Superficial temporal is a terminal branch of ECA','Occipital artery is a branch of ICA'],ans:3,exp:'Occipital artery is a branch of ECA, not ICA. Only supratrochlear + supraorbital come from ICA via ophthalmic.'},
+  {type:'mcq',q:'Lymph from the ANTERIOR part of the scalp and forehead drains to:',opts:['Occipital LN','Mastoid LN','Superficial parotid LN','Submandibular LN'],ans:3,exp:'Anterior scalp → Submandibular LN.'},
+  {type:'mcq',q:'Which nerve is MOTOR to the frontal belly of occipitofrontalis?',opts:['Supratrochlear nerve','Temporal branch of facial nerve','Auriculotemporal nerve','Supraorbital nerve'],ans:1,exp:'Temporal branch of CN VII is motor to frontal belly. Posterior auricular branch = motor to occipital belly.'},
+  {type:'mcq',q:'The auriculotemporal nerve is a sensory branch of:',opts:['Ophthalmic division V1','Maxillary division V2','Posterior division of mandibular nerve V3','Facial nerve CN VII'],ans:2,exp:'Auriculotemporal N = sensory branch of POSTERIOR division of mandibular nerve (V3).'},
+  {type:'tf',q:'The scalp proper consists of the first 3 layers: Skin, Connective tissue, and Aponeurotic layer.',ans:true,exp:'TRUE — Layers 1+2+3 (S+C+A) are firmly united and move as one unit = scalp proper.'},
+  {type:'tf',q:'The dangerous area of the scalp is the pericranium (5th layer).',ans:false,exp:'FALSE — Dangerous area = Layer 4 = Loose areolar tissue (contains valveless emissary veins).'},
+  {type:'tf',q:'The occipitofrontalis has 2 large fused frontal bellies and 2 small separated occipital bellies.',ans:true,exp:'TRUE — Frontal bellies: large + fused. Occipital bellies: small + separated.'},
+  {type:'tf',q:'Supratrochlear and supraorbital arteries are both branches of the external carotid artery.',ans:false,exp:'FALSE — Both are branches of the ophthalmic artery, which is a branch of the ICA (internal carotid).'},
+  {type:'tf',q:'Scalp veins anastomose freely and connect with intracranial sinuses via valveless emissary veins.',ans:true,exp:'TRUE — This is why scalp infections can spread intracranially.'},
+  {type:'tf',q:'The occipital lymph node drains lymph from the BACK of the scalp.',ans:true,exp:'TRUE — Occipital LN → back of scalp.'},
+  {type:'tf',q:'The temporal branch of CN VII is MOTOR to the frontal belly of occipitofrontalis.',ans:true,exp:'TRUE — Temporal branch of CN VII (motor). Occipital belly = posterior auricular branch of CN VII.'},
+  {type:'tf',q:'The zygomaticotemporal nerve is a sensory branch of the maxillary division (V2).',ans:true,exp:'TRUE — Zygomaticotemporal = branch of zygomatic nerve = V2 (maxillary division).'},
+  {type:'tf',q:'The great auricular nerve (C2, C3) is a sensory branch of the cervical plexus.',ans:true,exp:'TRUE — Great auricular nerve arises from C2+C3 of the cervical plexus.'},
+  {type:'tf',q:'The greater occipital nerve is a branch of the cervical plexus (anterior ramus).',ans:false,exp:'FALSE — Greater occipital N = sensory branch of POSTERIOR ramus of C2 (not cervical plexus/anterior ramus).'},
+];
+const HN_FACE_QUIZ = [
+  {type:'mcq',q:'The facial artery arises from:',opts:['Internal carotid artery','Maxillary artery','External carotid artery','Ophthalmic artery'],ans:2,exp:'Facial artery is a direct branch of ECA. It enters the face by hooking over the lower border of the mandible.'},
+  {type:'mcq',q:'The TERMINAL branch of the facial artery is:',opts:['Lateral nasal artery','Superior labial artery','Angular artery','Submental artery'],ans:2,exp:'Angular artery = terminal branch; it anastomoses with the terminal branches of the ophthalmic artery.'},
+  {type:'mcq',q:'Regarding branches of the facial artery — ALL TRUE EXCEPT:',opts:['Submental artery is a branch','Superior labial artery is a branch','Transverse facial artery is a branch','Angular artery is the terminal branch'],ans:2,exp:'Transverse facial artery is a branch of SUPERFICIAL TEMPORAL artery, NOT the facial artery.'},
+  {type:'tf',q:'The facial artery arises from the internal carotid artery.',ans:false,exp:'FALSE — Facial artery = branch of ECA (external carotid artery).'},
+  {type:'tf',q:'The angular artery is the FIRST branch of the facial artery.',ans:false,exp:'FALSE — Angular artery is the TERMINAL (last) branch. First branch = submental artery.'},
+];
+const HN_PAROTID_QUIZ = [
+  {type:'mcq',q:'The parotid gland is:',opts:['The smallest salivary gland','A mucous gland','Shaped like a three-sided pyramid','Located above the zygomatic arch'],ans:2,exp:'Parotid = LARGEST salivary gland, SEROUS type, three-sided pyramid shape, located below the external auditory meatus.'},
+  {type:'mcq',q:'The parotid gland is divided into superficial and deep parts by:',opts:['Retromandibular vein','External carotid artery','Facial nerve (CN VII)','Styloid process'],ans:2,exp:'Branches of the facial nerve divide the parotid into superficial (lateral) and deep (medial) parts.'},
+  {type:'mcq',q:'The parotid duct (Stensen\'s) opens into the mouth opposite:',opts:['Upper 1st molar','Upper 2nd molar','Lower 2nd molar','Lower 1st molar'],ans:1,exp:'Parotid duct: 5 cm long, 3 mm diameter. Pierces buccinator → opens in vestibule opposite UPPER 2nd molar.'},
+  {type:'mcq',q:'Contents of parotid gland from SUPERFICIAL to DEEP:',opts:['ECA → Retromandibular vein → Facial nerve','Retromandibular vein → Facial nerve → ECA','Facial nerve → Retromandibular vein → ECA','Facial nerve → ECA → Retromandibular vein'],ans:2,exp:'Superficial → Deep: Facial nerve (most superficial) → Retromandibular vein → ECA (deepest).'},
+  {type:'mcq',q:'Regarding the parotid gland — ALL TRUE EXCEPT:',opts:['Glenoid process is lodged between ext. acoustic meatus and TMJ capsule','Pterygoid process extends between medial pterygoid and ramus','Facial process extends along the duct','Parasympathetic supply is via the facial nerve'],ans:3,exp:'Parasympathetic supply to parotid is via CN IX → lesser petrosal → otic ganglion → auriculotemporal. NOT CN VII.'},
+  {type:'mcq',q:'Terminal muscular branches of the facial nerve in parotid — ALL TRUE EXCEPT:',opts:['Temporal branch','Zygomatic branch','Buccal branch','Auriculotemporal branch'],ans:3,exp:'Auriculotemporal is a branch of mandibular nerve V3. CN VII terminal branches in parotid: Temporal, Zygomatic, Buccal, Mandibular, Cervical.'},
+  {type:'tf',q:'The parotid gland is a serous gland (not mucous).',ans:true,exp:'TRUE — The parotid gland is a purely SEROUS gland.'},
+  {type:'tf',q:'The parotid gland is divided into superficial and deep parts by the facial nerve.',ans:true,exp:'TRUE — Branches of CN VII divide the parotid into superficial and deep parts.'},
+  {type:'tf',q:'The parotid duct is approximately 5 cm long and 3 mm in diameter.',ans:true,exp:'TRUE — Stensen\'s duct: 5 cm long, 3 mm diameter.'},
+  {type:'tf',q:'The parotid duct opens opposite the upper SECOND molar tooth.',ans:true,exp:'TRUE — Parotid duct opens in vestibule opposite the upper 2nd molar.'},
+  {type:'tf',q:'Secretomotor parasympathetic supply to the parotid gland travels via the auriculotemporal nerve.',ans:true,exp:'TRUE — CN IX → tympanic branch → lesser petrosal → otic ganglion → postganglionic via auriculotemporal nerve → parotid.'},
+  {type:'tf',q:'The retromandibular vein is formed by the union of the maxillary and superficial temporal veins.',ans:true,exp:'TRUE — Retromandibular vein = maxillary vein + superficial temporal vein.'},
+];
+const HN_FACIALN_QUIZ = [
+  {type:'mcq',q:'The facial nerve enters the face through:',opts:['Foramen ovale','Foramen spinosum','Stylomastoid foramen','Jugular foramen'],ans:2,exp:'CN VII exits the skull via stylomastoid foramen → passes through parotid → gives terminal branches.'},
+  {type:'mcq',q:'Inside the middle ear, branches of the facial nerve include ALL EXCEPT:',opts:['Chorda tympani','Nerve to stapedius','Greater superficial petrosal nerve','Lesser petrosal nerve'],ans:3,exp:'Lesser petrosal nerve = branch of CN IX (glossopharyngeal), NOT CN VII. CN VII inside middle ear: chorda tympani, nerve to stapedius, greater superficial petrosal.'},
+  {type:'mcq',q:'All muscles of facial expression are supplied by:',opts:['Trigeminal nerve (V)','Facial nerve (VII)','Glossopharyngeal nerve (IX)','Hypoglossal nerve (XII)'],ans:1,exp:'ALL muscles of facial expression (mimetic muscles) are supplied by CN VII facial nerve.'},
+  {type:'mcq',q:'Which is NOT a muscle of the ORBITAL group of facial expression?',opts:['Orbicularis oculi','Corrugator supercilii','Occipitofrontalis','Zygomaticus major'],ans:3,exp:'Zygomaticus major belongs to the ORAL group. Orbital group: orbicularis oculi, occipitofrontalis, corrugator supercilii, depressor supercilii.'},
+  {type:'mcq',q:'Regarding the facial nerve — ALL TRUE EXCEPT:',opts:['Has a large motor root and an intermediate nerve','Intermediate nerve carries taste and parasympathetic fibers','Enters face via stylomastoid foramen','Gives inferior alveolar nerve inside the parotid'],ans:3,exp:'Inferior alveolar nerve is a branch of the MANDIBULAR nerve (V3), not the facial nerve.'},
+  {type:'tf',q:'The facial nerve gives chorda tympani, nerve to stapedius, and greater superficial petrosal inside the middle ear.',ans:true,exp:'TRUE — These 3 branches arise from CN VII inside the middle ear (petrous temporal bone).'},
+  {type:'tf',q:'The facial nerve enters the face through the foramen ovale.',ans:false,exp:'FALSE — Facial nerve (CN VII) enters the face through the STYLOMASTOID foramen.'},
+  {type:'tf',q:'Terminal branches of facial nerve in parotid gland: Temporal, Zygomatic, Buccal, Mandibular, Cervical.',ans:true,exp:'TRUE — Mnemonic: Two Zebras Bit My Cat.'},
+];
+const HN_MAST_QUIZ = [
+  {type:'mcq',q:'All 4 muscles of mastication are supplied by:',opts:['Facial nerve (CN VII)','Mandibular division of trigeminal (V3)','Maxillary division (V2)','Glossopharyngeal nerve (IX)'],ans:1,exp:'All muscles of mastication = branches of mandibular nerve V3.'},
+  {type:'mcq',q:'The temporalis muscle inserts into:',opts:['Angle of mandible','Outer surface of ramus of mandible','Coronoid process and anterior border of ramus','Pterygoid fovea and TMJ disc'],ans:2,exp:'Temporalis inserts into tip of coronoid process + anterior border of ramus (after passing deep to zygomatic arch).'},
+  {type:'mcq',q:'The ANTIGRAVITY muscle of mastication that elevates the mandible is:',opts:['Lateral pterygoid','Temporalis','Masseter','Both B and C'],ans:3,exp:'Both temporalis and masseter elevate the mandible. Masseter is specifically called the \'antigravity muscle.\' Lateral pterygoid DEPRESSES.'},
+  {type:'mcq',q:'Regarding masseter — ALL TRUE EXCEPT:',opts:['Superficial fibers from lower border of zygomatic arch','Deep fibers from medial surface of zygomatic arch','Inserts into outer surface of ramus of mandible','Its main action is to DEPRESS the mandible'],ans:3,exp:'Masseter ELEVATES (deep fibers) and PROTRUDES (superficial fibers) the mandible. It does NOT depress it.'},
+  {type:'mcq',q:'The lateral pterygoid inserts into:',opts:['Angle of mandible (medial surface)','Coronoid process of mandible','Pterygoid fovea + articular disc of TMJ','Outer surface of ramus'],ans:2,exp:'Lateral pterygoid inserts into pterygoid fovea (front of neck of mandible) AND articular disc & capsule of TMJ.'},
+  {type:'mcq',q:'Regarding medial pterygoid — ALL TRUE EXCEPT:',opts:['Superficial head from maxillary tuberosity','Deep head from medial surface of lateral pterygoid plate','Inserts into medial surface of angle of mandible','Nerve supply from anterior division of mandibular nerve'],ans:3,exp:'Medial pterygoid is supplied by the TRUNK of mandibular nerve (not anterior division). Lateral pterygoid is supplied by anterior division.'},
+  {type:'mcq',q:'Which muscle RETRACTS the mandible?',opts:['Masseter','Medial pterygoid','Lateral pterygoid','Temporalis (posterior fibers)'],ans:3,exp:'Posterior fibers of temporalis RETRACT the mandible. Anterior + superior fibers ELEVATE it.'},
+  {type:'tf',q:'Temporalis muscle is supplied by the deep temporal branches from the ANTERIOR division of mandibular nerve.',ans:true,exp:'TRUE — Deep temporal branches → anterior division of V3 → temporalis.'},
+  {type:'tf',q:'Masseter muscle is considered an antigravity muscle because it elevates the mandible.',ans:true,exp:'TRUE — Masseter elevates the mandible and maintains jaw position against gravity.'},
+  {type:'tf',q:'Lateral pterygoid muscle is the main muscle responsible for ELEVATION of the mandible.',ans:false,exp:'FALSE — Lateral pterygoid DEPRESSES and PROTRACTS the mandible (opens the mouth). Elevators = temporalis, masseter, medial pterygoid.'},
+  {type:'tf',q:'Medial pterygoid inserts into the MEDIAL surface of the angle of mandible.',ans:true,exp:'TRUE — Medial pterygoid inserts into the medial surface of the angle of mandible.'},
+];
+const HN_MAXA_QUIZ = [
+  {type:'mcq',q:'The maxillary artery originates:',opts:['In the neck from ECA directly','Within the parotid behind the neck of mandible','In the infratemporal fossa','In the pterygopalatine fossa'],ans:1,exp:'Maxillary artery = terminal branch of ECA, originates within the parotid gland, behind the neck of the mandible.'},
+  {type:'mcq',q:'The middle meningeal artery passes through:',opts:['Foramen ovale','Foramen rotundum','Foramen spinosum','Foramen lacerum'],ans:2,exp:'Middle meningeal artery (branch of 1st part) passes through foramen spinosum into the middle cranial fossa.'},
+  {type:'mcq',q:'Branches of 1st part of maxillary artery — ALL TRUE EXCEPT:',opts:['Inferior alveolar artery','Middle meningeal artery','Deep temporal artery','Anterior tympanic artery'],ans:2,exp:'Deep temporal artery is from the 2nd part (pterygoid/muscular). 1st part: inferior alveolar, middle meningeal, accessory meningeal, deep auricular, anterior tympanic.'},
+  {type:'mcq',q:'Branches of 2nd part (pterygoid) of maxillary artery are mainly:',opts:['Sensory','Muscular','To bones','Parasympathetic'],ans:1,exp:'2nd part branches are mainly MUSCULAR: deep temporal artery, pterygoid branches, masseteric artery, buccal artery.'},
+  {type:'mcq',q:'The sphenopalatine artery is a branch of which part of the maxillary artery?',opts:['1st part (mandibular)','2nd part (pterygoid)','3rd part (pterygopalatine)','Facial artery'],ans:2,exp:'Sphenopalatine artery = branch of 3rd part. It enters the nasal cavity via sphenopalatine foramen = main arterial supply of nasal cavity.'},
+  {type:'mcq',q:'Branches of 3rd part of maxillary artery — ALL TRUE EXCEPT:',opts:['Infraorbital artery','Sphenopalatine artery','Greater palatine artery','Masseteric artery'],ans:3,exp:'Masseteric artery = branch of 2nd part (pterygoid). 3rd part: infraorbital, sphenopalatine, PSA, greater palatine, artery of pterygoid canal, pharyngeal.'},
+  {type:'tf',q:'The maxillary artery is a terminal branch of the INTERNAL carotid artery.',ans:false,exp:'FALSE — Maxillary artery = terminal branch of EXTERNAL carotid artery (ECA).'},
+  {type:'tf',q:'The middle meningeal artery passes through the foramen spinosum.',ans:true,exp:'TRUE — Middle meningeal artery passes through foramen spinosum into the middle cranial fossa.'},
+  {type:'tf',q:'Branches of the 2nd part (pterygoid part) of the maxillary artery are mainly muscular.',ans:true,exp:'TRUE — 2nd part = pterygoid part = mainly muscular: deep temporal, pterygoid branches, masseteric, buccal.'},
+  {type:'tf',q:'The sphenopalatine artery is a branch of the 3rd part (pterygopalatine) of maxillary artery.',ans:true,exp:'TRUE — Sphenopalatine = main supply to nasal cavity, branches from 3rd part.'},
+];
+const HN_V3_QUIZ = [
+  {type:'mcq',q:'Branches from the TRUNK of mandibular nerve include:',opts:['Auriculotemporal + lingual','Meningeal branch + nerve to medial pterygoid','Inferior alveolar + buccal','Nerve to masseter + deep temporal'],ans:1,exp:'From trunk: ① Meningeal branch (nervus spinosus) ② Nerve to medial pterygoid (also supplies tensor palati + tensor tympani).'},
+  {type:'mcq',q:'The ONLY sensory branch of the ANTERIOR division of mandibular nerve is:',opts:['Inferior alveolar nerve','Lingual nerve','Buccal nerve','Auriculotemporal nerve'],ans:2,exp:'Anterior division = mostly MOTOR except buccal nerve (sensory only — supplies buccal mucosa and skin of cheek).'},
+  {type:'mcq',q:'Regarding anterior division of mandibular nerve — ALL TRUE EXCEPT:',opts:['It is smaller than posterior division','All branches are motor except buccal nerve','Inferior alveolar nerve arises from it','Nerve to lateral pterygoid arises from it'],ans:2,exp:'Inferior alveolar nerve is from POSTERIOR division. Anterior division: nerve to lateral pterygoid, deep temporal, nerve to masseter, buccal nerve.'},
+  {type:'mcq',q:'The lingual nerve is joined by:',opts:['Greater petrosal nerve','Chorda tympani (from CN VII)','Nerve to stapedius','Tympanic nerve'],ans:1,exp:'Lingual nerve (posterior division V3) is joined by chorda tympani → carries taste from anterior 2/3 tongue + parasympathetic to submandibular/sublingual glands.'},
+  {type:'mcq',q:'Posterior division of mandibular nerve — ALL TRUE EXCEPT:',opts:['Auriculotemporal nerve is a branch','Inferior alveolar nerve is a branch','Lingual nerve is a branch','Nerve to masseter is a branch'],ans:3,exp:'Nerve to masseter is from ANTERIOR division. Posterior division (larger, mostly sensory + 1 motor): auriculotemporal, inferior alveolar, lingual.'},
+  {type:'tf',q:'The buccal nerve is the ONLY sensory branch of the anterior division of mandibular nerve.',ans:true,exp:'TRUE — Anterior division is mostly motor (to temporalis, masseter, lateral pterygoid); buccal nerve is the ONLY sensory exception.'},
+  {type:'tf',q:'The inferior alveolar nerve arises from the ANTERIOR division of mandibular nerve.',ans:false,exp:'FALSE — Inferior alveolar nerve arises from POSTERIOR division of mandibular nerve.'},
+  {type:'tf',q:'The lingual nerve is joined by the chorda tympani.',ans:true,exp:'TRUE — Chorda tympani (CN VII) joins the lingual nerve → adds taste from ant. 2/3 tongue + parasympathetic to submandibular/sublingual.'},
+  {type:'tf',q:'The nerve to medial pterygoid also supplies tensor palati and tensor tympani.',ans:true,exp:'TRUE — Nerve to medial pterygoid (from trunk of V3) also supplies tensor palati + tensor tympani.'},
+];
+const HN_DEV_QUIZ = [
+  {type:'mcq',q:'The philtrum of the upper lip is derived from:',opts:['Maxillary process','Mandibular process','Medial nasal process (frontonasal)','Lateral nasal process'],ans:2,exp:'Philtrum = medial nasal process (part of frontonasal). Maxillary process → upper lip LATERAL to philtrum.'},
+  {type:'mcq',q:'Regarding development of face — ALL TRUE EXCEPT:',opts:['Face develops from 5 processes surrounding the stomodium','Frontonasal process gives forehead, upper eyelid, nasal bridge','Lower lip forms by fusion of two mandibular processes','Lower eyelid is derived from frontonasal process'],ans:3,exp:'Lower eyelid is from MAXILLARY process. Frontonasal gives: forehead, upper eyelid, nasal bridge, ala of nose, tip+septum of nose.'},
+  {type:'mcq',q:'Sensory innervation of all derivatives of the MANDIBULAR process is by:',opts:['V1 (ophthalmic)','V2 (maxillary)','V3 (mandibular)','Facial nerve'],ans:2,exp:'Mandibular process derivatives (lower lip, lower cheek) → sensory supply by mandibular division V3.'},
+  {type:'tf',q:'The philtrum of the upper lip is derived from the maxillary process.',ans:false,exp:'FALSE — Philtrum = medial nasal process (frontonasal process). Maxillary process → upper lip lateral to philtrum.'},
+  {type:'tf',q:'All sensory derivatives of the frontonasal process are supplied by ophthalmic V1.',ans:true,exp:'TRUE — Frontonasal process derivatives (forehead, upper eyelid, nose) are supplied by V1 (ophthalmic division).'},
+];
+
+
+/* ══════════════════════════════════════════════════
+   HEAD & NECK P3 — NECK ANATOMY FLASH CARDS (130)
+══════════════════════════════════════════════════ */
+const HN3_MUS = [
+  {cat:'neck_mus',q:'SCM — sternal head origin?',a:'Manubrium sterni (rounded).'},
+  {cat:'neck_mus',q:'SCM — clavicular head origin?',a:'Medial 1/3 of upper surface of clavicle.'},
+  {cat:'neck_mus',q:'SCM — insertion?',a:'Mastoid process + superior nuchal line of occipital bone.'},
+  {cat:'neck_mus',q:'SCM — nerve supply?',a:'Spinal part of accessory nerve (CN XI) [motor] + C2, C3 anterior rami [proprioceptive].'},
+  {cat:'neck_mus',q:'SCM — action of ONE muscle?',a:'Bends head to same side (ear to shoulder) AND turns face to opposite side.'},
+  {cat:'neck_mus',q:'SCM — action of BOTH muscles together?',a:'Flex the neck.'},
+  {cat:'neck_mus',q:'Sternohyoid — full details?',a:'Origin = post. surface of manubrium sterni | Insertion = lower border of body of hyoid | N/S = ansa cervicalis (C1,2,3) | Action = depression of hyoid.'},
+  {cat:'neck_mus',q:'Sternothyroid — full details?',a:'Origin = post. surface of manubrium sterni (DEEP to sternohyoid) | Insertion = oblique line on lamina of thyroid cartilage | N/S = ansa cervicalis (C1,2,3) | Action = depression of larynx.'},
+  {cat:'neck_mus',q:'Thyrohyoid — nerve supply? (EXAM TRAP)',a:'C1 via branch of hypoglossal nerve. IT IS THE ONLY INFRAHYOID MUSCLE NOT SUPPLIED BY ANSA CERVICALIS.'},
+  {cat:'neck_mus',q:'Thyrohyoid — origin, insertion, action?',a:'Origin = oblique line on lamina of thyroid cartilage | Insertion = lower border of body of hyoid | Action = depression of hyoid OR elevation of larynx.'},
+  {cat:'neck_mus',q:'Omohyoid — two bellies origins?',a:'Superior belly = lower border of body of hyoid. Inferior belly = upper margin of scapula + suprascapular ligament.'},
+  {cat:'neck_mus',q:'Omohyoid — intermediate tendon?',a:'Held by a loop of deep fascia to the clavicle and 1st rib. N/S = ansa cervicalis (C1,2,3). Action = depression of hyoid bone.'},
+  {cat:'neck_mus',q:'Name all 4 infrahyoid (strap) muscles.',a:'Sternohyoid, Sternothyroid, Thyrohyoid, Omohyoid.\n(ALL supplied by ansa cervicalis EXCEPT thyrohyoid which is C1 via CN XII).'},
+  {cat:'neck_mus',q:'Name all suprahyoid muscles.',a:'Stylohyoid, Mylohyoid, Geniohyoid, Hyoglossus, Digastric.'},
+  {cat:'neck_mus',q:'Digastric — anterior belly: origin + nerve?',a:'Origin = digastric fossa of mandible (near median plane).\nN/S = nerve to MYLOHYOID (branch of inferior alveolar nerve).'},
+  {cat:'neck_mus',q:'Digastric — posterior belly: origin + nerve?',a:'Origin = medial surface of mastoid process of temporal bone.\nN/S = FACIAL NERVE (via nerve to stylohyoid).'},
+  {cat:'neck_mus',q:'Digastric — insertion + action?',a:'Insertion = intermediate tendon held to hyoid near greater horn by fibrous loop.\nAction = depression of mandible OR elevation of hyoid bone.'},
+  {cat:'neck_mus',q:'Stylohyoid — full details?',a:'Origin = styloid process | Insertion = hyoid (junction of body & greater cornu) | N/S = facial nerve.\nSPECIAL: pierced near insertion by intermediate tendon of digastric.'},
+  {cat:'neck_mus',q:'Mylohyoid — full details?',a:'Origin = mylohyoid line of mandible | Post. fibers (1/4) → hyoid; ant. fibers (3/4) → mylohyoid raphe | N/S = nerve to mylohyoid (br. of inferior alveolar N.) | Named "DIAPHRAGMATICA ORIS."'},
+  {cat:'neck_mus',q:'Geniohyoid — full details?',a:'Origin = inferior mental spine (inferior genial tubercle) | Insertion = hyoid bone (ant. surface) | N/S = C1 via hypoglossal nerve | Action = elevation of hyoid OR depression of mandible.'},
+  {cat:'neck_mus',q:'Genioglossus — shape, origin, N/S, action?',a:'FAN-SHAPED | Origin = superior mental spine | Insertion = tongue (tip & dorsum) + hyoid bone | N/S = hypoglossal nerve (CN XII) | Action = PROTRUSION of tongue.'},
+  {cat:'neck_mus',q:'Hyoglossus — shape, origin, N/S, action?',a:'QUADRILATERAL | Origin = upper border of body + greater cornu of hyoid | Insertion = side of tongue | N/S = hypoglossal nerve | Action = DEPRESSION of tongue.'},
+  {cat:'neck_mus',q:'Styloglossus — origin, N/S, action?',a:'Origin = styloid process | Insertion = side of tongue | N/S = hypoglossal nerve | Action = RETRACTION and ELEVATION of tongue.'},
+  {cat:'neck_mus',q:'Platysma — origin, insertion, N/S, action?',a:'Origin = deep fascia of upper pectoralis major + deltoid | Insertion = base of mandible + angle of mouth | N/S = cervical branch of facial nerve | Action = depression of mandible and angles of mouth.'},
+  {cat:'neck_mus',q:'Scalenus Anterior — full details?',a:'Origin = anterior tubercles of TP of C3,4,5,6 | Insertion = scalene tubercle on inner border of 1st rib | N/S = C4,5,6 | Action = flex neck + assist elevation of 1st rib.'},
+  {cat:'neck_mus',q:'What lies ANTERIOR to scalenus anterior?',a:'Prevertebral fascia, PHRENIC NERVE, superficial cervical artery, suprascapular artery, subclavian vein, IJV.'},
+  {cat:'neck_mus',q:'Scalenus Medius — insertion + distinguishing feature?',a:'Inserts into UPPER SURFACE of 1st rib BEHIND groove for subclavian artery. Origin = post. tubercles of TP of C1-C6.'},
+  {cat:'neck_mus',q:'Scalenus Posterior — insertion?',a:'Outer surface of 2nd rib. May be absent or blend with scalenus medius.'},
+  {cat:'neck_mus',q:'COMPARE: 3 scalene insertions?',a:'ANT = scalene tubercle on INNER border of 1st rib.\nMED = upper surface 1st rib BEHIND groove for subclavian artery.\nPOST = outer surface of 2nd rib.'},
+];
+const HN3_FAS = [
+  {cat:'neck_fas',q:'Name the 4 layers of deep fascia of the neck.',a:'1. Investing layer | 2. Pretracheal layer | 3. Prevertebral layer | 4. Carotid sheath.'},
+  {cat:'neck_fas',q:'Superficial fascia of neck — what does it contain?',a:'1. Platysma | 2. Superficial cutaneous nerves | 3. Superficial veins (EJV, ant. jugular, jugular arch) | 4. Superficial (superior cervical) lymph nodes.'},
+  {cat:'neck_fas',q:'Carotid sheath — structure + attachments?',a:'Tubular condensation of DEEP fascia (4th layer). Attached above to base of skull; below blends with adventitia of arch of aorta; anteriorly = pretracheal fascia; posteriorly = prevertebral fascia.'},
+  {cat:'neck_fas',q:'Carotid sheath UPPER part contents?',a:'(a) ICA — anteromedially. (b) IJV — posterolaterally. (c) Lower 4 cranial nerves (9,10,11,12) — between ICA & IJV.'},
+  {cat:'neck_fas',q:'Carotid sheath LOWER part contents?',a:'(a) CCA — anteromedially. (b) IJV — posterolaterally. (c) Vagus nerve (CN X) — between them.'},
+  {cat:'neck_fas',q:'Pretracheal fascia — clinical importance for thyroid?',a:'Forms the FALSE CAPSULE of thyroid and attaches gland to larynx + trachea → thyroid moves UP with swallowing. True capsule = fibrous. Vessels run BETWEEN the two capsules.'},
+  {cat:'neck_fas',q:'EJV — beginning, ending, course?',a:'Begins: union of POST. AURICULAR VEIN + POST. DIVISION of retromandibular vein below angle of mandible. Ends: SUBCLAVIAN VEIN (just above middle of clavicle). Course: superficial to SCM, pierces deep fascia 1 inch above clavicle.'},
+  {cat:'neck_fas',q:'EJV — 6 tributaries?',a:'1. Post. auricular | 2. Post. division of retromandibular | 3. Post. external jugular | 4. Ant. jugular | 5. Transverse cervical | 6. Suprascapular vein.'},
+  {cat:'neck_fas',q:'Anterior jugular vein — how does it start?',a:'Starts under chin from SUBMENTAL PLEXUS of veins. Two ant. jugular veins joined by JUGULAR ARCH above sternum.'},
+  {cat:'neck_fas',q:'IJV — beginning, ending?',a:'Begins: JUGULAR FORAMEN as continuation of sigmoid sinus. Ends: medial end of clavicle by uniting with subclavian vein → BRACHIOCEPHALIC (innominate) vein.'},
+  {cat:'neck_fas',q:'IJV — dilatations + valve?',a:'Superior bulb (upper end) + inferior bulb (lower end). BICUSPID VALVE lies above the inferior bulb.'},
+  {cat:'neck_fas',q:'IJV — 6 tributaries — mnemonic?',a:'1. Inferior petrosal sinus | 2. Pharyngeal veins | 3. Lingual vein | 4. Facial (common facial) vein | 5. Superior thyroid vein | 6. Middle thyroid vein. Mnemonic: "IPLFSM."'},
+  {cat:'neck_fas',q:'Which thyroid veins drain into IJV vs. brachiocephalic?',a:'INTO IJV: Superior + Middle thyroid veins.\nINTO LEFT BRACHIOCEPHALIC: Inferior thyroid vein.'},
+  {cat:'neck_fas',q:'IJV course in neck?',a:'Descends through neck in carotid sheath, lateral to ICA (upper) and CCA (lower).'},
+];
+const HN3_ART = [
+  {cat:'neck_art',q:'CCA — different origins right vs. left?',a:'RIGHT CCA = from brachiocephalic (innominate) artery. LEFT CCA = from ARCH OF AORTA. Both divide at disc C3-C4 into ICA + ECA.'},
+  {cat:'neck_art',q:'Carotid sinus vs. carotid body?',a:'CAROTID SINUS = dilatation at CCA bifurcation; BARORECEPTORS (BP changes); CN IX.\nCAROTID BODY = oval cellular body behind sinus; CHEMORECEPTORS (pH + CO2); CN IX.'},
+  {cat:'neck_art',q:'ECA — origin, ending, terminal branches?',a:'Origin = terminal branch of CCA at disc C3-C4. Ends: opposite neck of mandible inside parotid. Terminals = MAXILLARY + SUPERFICIAL TEMPORAL arteries.'},
+  {cat:'neck_art',q:'ECA — all 8 branches + from which aspect?',a:'ANTERIOR: Superior thyroid, Lingual, Facial.\nMEDIAL: Ascending pharyngeal.\nPOSTERIOR: Occipital, Post. auricular.\nTERMINAL: Maxillary, Superficial temporal.'},
+  {cat:'neck_art',q:'What 6 structures separate ECA from ICA?',a:'Styloid process | Stylo-glossus | Stylo-pharyngeus | Glosso-pharyngeal nerve (CN IX) | Pharyngeal branch of vagus | Part of parotid gland.'},
+  {cat:'neck_art',q:'Superior Thyroid Artery — origin + nerve with it?',a:'Branch of ANTERIOR ECA below greater horn of hyoid. Accompanied by EXTERNAL LARYNGEAL NERVE (superficial to it).'},
+  {cat:'neck_art',q:'Superior Thyroid Artery — branches?',a:'Infrahyoid | Muscular (SCM + cricothyroid) | Superior laryngeal artery (pierces thyrohyoid membrane WITH INTERNAL laryngeal nerve) | Glandular to upper 1/3 lat. lobe + upper 1/4 isthmus.'},
+  {cat:'neck_art',q:'Lingual Artery — origin, 3 parts, branches?',a:'Branch of anterior ECA OPPOSITE greater horn of hyoid. Divided by HYOGLOSSUS: 1st = before (→ suprahyoid), 2nd = BEHIND (→ 2× dorsalis linguae), 3rd = after (→ sublingual + deep artery of tongue).'},
+  {cat:'neck_art',q:'Facial Artery — origin, ending, course in neck?',a:'Branch of anterior ECA above greater horn of hyoid. Ends = ANGULAR ARTERY. In neck: ascends deep to stylohyoid + post. belly of digastric + angle of mandible. Tortuous.'},
+  {cat:'neck_art',q:'Facial Artery — branches in NECK (4)?',a:'Ascending palatine | Tonsillar branch | Submental artery | Glandular (submandibular) branch.'},
+  {cat:'neck_art',q:'Facial Artery — branches in FACE (4)?',a:'Inferior labial | Superior labial | Lateral nasal | Angular artery (terminal → ophthalmic anastomosis).'},
+  {cat:'neck_art',q:'Ascending Pharyngeal Artery — origin + branches?',a:'Origin = MEDIAL aspect of ECA. Branches: Pharyngeal | Tonsillar | Inferior tympanic (middle ear) | Meningeal branches.'},
+  {cat:'neck_art',q:'Occipital Artery — origin + 4 parts?',a:'Origin = POSTERIOR ECA. 1st = under post. belly digastric → 2nd = medial to mastoid → 3rd = apex of occipital triangle → 4th = under trapezius (pierces it).'},
+  {cat:'neck_art',q:'Posterior Auricular Artery — origin + branches?',a:'Origin = POSTERIOR ECA above post. belly of digastric. Branches: Stylomastoid br. (→ inner ear) | Terminal to back of scalp | Auricular branch to pinna.'},
+  {cat:'neck_art',q:'Superficial Temporal Artery — origin + branches?',a:'TERMINAL branch of ECA inside parotid (neck of mandible). Ends: frontal + parietal branches. Other: transverse facial, glandular, zygomatico-orbital, anterior auricular, middle temporal.'},
+  {cat:'neck_art',q:'ICA — 4 parts?',a:'Cervical | Intra-petrous (carotid canal of temporal bone) | Intra-cavernous (cavernous sinus) | Intra-cranial.'},
+  {cat:'neck_art',q:'ICA — branches in CERVICAL PART?',a:'NONE. ICA gives NO branches in the cervical part.'},
+  {cat:'neck_art',q:'ICA — intra-petrous branches?',a:'Two cortico-tympanic arteries (to middle ear) + small branch to pterygoid canal.'},
+  {cat:'neck_art',q:'ICA — intra-cavernous branches?',a:'Superior hypophyseal | Cavernous sinus branch (inferior hypophyseal) | Meningeal branches.'},
+  {cat:'neck_art',q:'ICA — intra-cranial branches?',a:'Ophthalmic artery | Anterior choroid artery | Posterior communicating artery | Anterior cerebral artery (terminal) | Middle cerebral artery (terminal).'},
+  {cat:'neck_art',q:'ICA terminal branches (NOT posterior cerebral)?',a:'ICA ends as ANTERIOR CEREBRAL + MIDDLE CEREBRAL arteries. Posterior cerebral = from basilar artery.'},
+];
+const HN3_TRI = [
+  {cat:'neck_tri',q:'What divides the neck into anterior and posterior triangles?',a:'The STERNOMASTOID muscle divides the anterolateral aspect of the neck.'},
+  {cat:'neck_tri',q:'Posterior triangle — 4 boundaries + apex?',a:'Anteriorly = post. border SCM | Posteriorly = ant. border trapezius | Inferiorly = middle 1/3 clavicle | Apex = meeting of SCM + trapezius. Roof = investing layer. Floor = prevertebral fascia.'},
+  {cat:'neck_tri',q:'Posterior triangle — 2 sub-triangles?',a:'Divided by INFERIOR BELLY OF OMOHYOID into:\nSUPRACLAVICULAR (LARGER, above) + OCCIPITAL (SMALLER, below).'},
+  {cat:'neck_tri',q:'Contents of posterior triangle — 4 categories?',a:'MUSCLE = inf. belly omohyoid.\nVEINS = EJV + subclavian + transverse cervical + suprascapular.\nNERVES = spinal accessory (CN XI), brachial plexus trunks, cutaneous cervical plexus branches.\nARTERIES = transverse cervical, suprascapular, occipital (3rd part), subclavian (3rd part).'},
+  {cat:'neck_tri',q:'Anterior triangle — 3 boundaries?',a:'Anteriorly = midline | Posteriorly = ant. border SCM | Superiorly = base of body of mandible.\nRoof = skin, sup. fascia, platysma, investing layer.'},
+  {cat:'neck_tri',q:'4 subdivisions of anterior triangle?',a:'Submental | Submandibular (digastric) | Carotid | Muscular.\n(Divided by: digastric + superior belly of omohyoid.)'},
+  {cat:'neck_tri',q:'Submental triangle — boundaries, floor, contents?',a:'UNPAIRED. Base = body of hyoid; Apex = symphysis menti; Sides = ant. bellies of digastric. Floor = mylohyoid + raphe. Contents = submental LNs, vessels, N. to mylohyoid, beginning of ant. jugular vein.'},
+  {cat:'neck_tri',q:'Submandibular (digastric) triangle — boundaries + contents?',a:'Ant. + post. belly digastric + stylohyoid + base of mandible. Floor = mylohyoid + hyoglossus. Contents = submandibular LNs, facial vessels, submandibular gland, N. to mylohyoid, hypoglossal N. (XII).'},
+  {cat:'neck_tri',q:'Carotid triangle — boundaries + contents?',a:'Boundaries: above = post. belly digastric; below = sup. belly omohyoid; post. = ant. border SCM.\nContents: 3 carotid arteries | IJV + tributaries | Last 3 CNs (10,11,12) | 3 small nerves | Deep cervical LNs + cervical symp. chain.'},
+  {cat:'neck_tri',q:'Muscular triangle — boundaries + floor?',a:'Anteriorly = midline; above = sup. belly omohyoid; below + post. = ant. border SCM. Floor = infrahyoid muscles. Under floor = thyroid, larynx, trachea, esophagus, parathyroid, pharynx.'},
+  {cat:'neck_tri',q:'Midline structures of neck from above downward (10)?',a:'Mylohyoid → Hyoid bone → Thyrohyoid membrane → Thyroid cartilage → Cricothyroid lig. → Cricoid cartilage → Cricothyroid lig. → Trachea (1st ring) → Thyroid gland (isthmus) → Suprasternal notch.'},
+  {cat:'neck_tri',q:'Skin innervation of anterolateral neck — 4 nerves?',a:'Transverse cutaneous N. (C2,3) | Supraclavicular N. (C3,4) — 3 branches to 2nd rib | Great auricular N. (C2,3) — angle of mandible + auricle | Lesser occipital N. (C2) — occipital region.'},
+];
+const HN3_THY = [
+  {cat:'neck_thy',q:'Thyroid gland — general description?',a:'Very vascular in MUSCULAR TRIANGLE. 2 lobes + isthmus. Isthmus = front of 2nd, 3rd, 4th tracheal rings. Each lobe = pyramidal/pear-shaped; apex = oblique line of thyroid cartilage; base = 4th/5th tracheal ring.'},
+  {cat:'neck_thy',q:'Thyroid — pyramidal lobe?',a:'Projects upward from isthmus, usually to LEFT of midline. Connected to hyoid bone by LEVATOR GLANDULAE THYROIDAE (muscular or fibrous band).'},
+  {cat:'neck_thy',q:'Thyroid — 2 capsules?',a:'TRUE capsule = fibrous (directly encloses gland). FALSE capsule = fascial (from pretracheal fascia). VESSELS run BETWEEN the two capsules.'},
+  {cat:'neck_thy',q:'Thyroid — anterolateral + medial + posterior relations?',a:'ANTEROLATERAL: SCM, sternohyoid, sternothyroid, omohyoid.\nMEDIAL: trachea, esophagus, larynx, pharynx, recurrent laryngeal N., external laryngeal N.\nPOSTERIOR: carotid sheath (CCA, IJV, vagus); parathyroids + sympathetic chain.'},
+  {cat:'neck_thy',q:'Thyroid arterial supply — 3 arteries?',a:'Superior thyroid artery → ECA (ant. aspect).\nInferior thyroid artery → THYROCERVICAL TRUNK (1st part subclavian).\nThyroidae ima artery → ARCH OF AORTA (inconstant; supplies isthmus).'},
+  {cat:'neck_thy',q:'Which nerve accompanies each thyroid artery?',a:'SUPERIOR thyroid → EXTERNAL laryngeal nerve (superficial).\nINFERIOR thyroid → related at its end to RECURRENT laryngeal nerve (surgical landmark).'},
+  {cat:'neck_thy',q:'Thyroid venous drainage — 3 veins?',a:'Superior thyroid vein → IJV.\nMiddle thyroid vein → IJV.\nInferior thyroid vein → LEFT BRACHIOCEPHALIC vein.'},
+  {cat:'neck_thy',q:'Thyroid lymph drainage + nerve supply?',a:'Lymph → mainly deep cervical LNs + few pretracheal (paratracheal) nodes.\nNerve = SYMPATHETIC plexus around arteries (vasomotor, not secretomotor).'},
+  {cat:'neck_thy',q:'Parathyroid glands — number, appearance, location?',a:'Usually 4 (2 superior + 2 inferior). Yellowish-brown, ovoid, ~6 mm. Related to POSTERIOR BORDER of each thyroid lobe within the fascial capsule.'},
+  {cat:'neck_thy',q:'Parathyroid glands — blood supply?',a:'Supplied by both superior + inferior thyroid arteries, but MAINLY by the INFERIOR thyroid artery.'},
+];
+const HN3_SAL = [
+  {cat:'neck_sal',q:'Submandibular gland — structure (2 parts)?',a:'LARGE SUPERFICIAL PART + SMALL DEEP PART, continuous around POSTERIOR BORDER OF MYLOHYOID.'},
+  {cat:'neck_sal',q:'Submandibular duct — description + where it opens?',a:'Arises from DEEP PART. 5 cm long. Runs between mylohyoid (laterally) + hyoglossus (medially). Lingual nerve hooks around the duct. Opens at SUBLINGUAL PAPILLA at sublingual fold (floor of mouth).'},
+  {cat:'neck_sal',q:'Submandibular gland — SUPERFICIAL PART: medial relations?',a:'Mylohyoid muscle, nerve + vessels; hyoglossus muscle; hypoglossal nerve; lingual nerve.'},
+  {cat:'neck_sal',q:'Submandibular gland — SUPERFICIAL PART: lateral relations?',a:'Submandibular fossa, submandibular LN, skin, fascia, platysma, facial vein, facial nerve (cervical branch). NB: Facial artery = POST. + SUP. aspect.'},
+  {cat:'neck_sal',q:'Submandibular gland — DEEP PART relations?',a:'Medially = hyoglossus + styloglossus. Laterally = mylohyoid. Superiorly = lingual nerve + submandibular ganglion. Inferiorly = hypoglossal nerve (CN XII).'},
+  {cat:'neck_sal',q:'Submandibular gland — nerve supply?',a:'Sympathetic = plexus around facial + lingual arteries. Parasympathetic = submandibular ganglion (post-ganglionic). Sensory = lingual nerve.'},
+  {cat:'neck_sal',q:'Submandibular ganglion — what is it + where?',a:'Small PARASYMPATHETIC ganglion HANGING FROM THE LINGUAL NERVE above mylohyoid. Relations: medially = hyoglossus; superiorly = lingual nerve; inferiorly = SUBMANDIBULAR DUCT.'},
+  {cat:'neck_sal',q:'Submandibular ganglion — fibers enter/exit?',a:'PREGANGLIONIC: superior salivary nucleus (pons) → facial N. → chorda tympani → lingual N. → relay here. POST-GANGLIONIC → SM + SL glands.'},
+  {cat:'neck_sal',q:'Chorda tympani — what does it carry (2 things)?',a:'1. TASTE fibers from anterior 2/3 of tongue.\n2. PREGANGLIONIC parasympathetic fibers to SM + SL glands.'},
+  {cat:'neck_sal',q:'Sublingual gland — position + duct openings?',a:'SMALLEST of 3 salivary glands. Lies beneath MUCOUS MEMBRANE of floor of mouth near midline. Has 8-20 small ducts opening on SUBLINGUAL FOLD.'},
+  {cat:'neck_sal',q:'Sublingual gland — 4 relations?',a:'Medial = genioglossus, submandibular duct, lingual nerve. Lateral = SUBLINGUAL FOSSA (mandible). Superior = sublingual fold (mucosa). Inferior = MYLOHYOID MUSCLE.'},
+  {cat:'neck_sal',q:'Sublingual gland — nerve supply?',a:'Sympathetic = plexus around arteries. Parasympathetic = submandibular ganglion. Sensory = lingual nerve.'},
+  {cat:'neck_sal',q:'Superior salivary nucleus location?',a:'In the PONS. (Inferior salivary nucleus = in the MEDULLA, supplies parotid via CN IX.)'},
+];
+const HN3_REV = [
+  {cat:'neck_rev',q:'TRAP: Thyrohyoid nerve supply?',a:'C1 via branch of HYPOGLOSSAL NERVE. ONLY infrahyoid NOT supplied by ansa cervicalis.'},
+  {cat:'neck_rev',q:'TRAP: Inferior thyroid vein drains into?',a:'LEFT BRACHIOCEPHALIC vein. (Superior + middle thyroid veins → IJV.)'},
+  {cat:'neck_rev',q:'TRAP: Superior laryngeal artery pierces thyrohyoid membrane with which nerve?',a:'INTERNAL laryngeal nerve (NOT external). External laryngeal nerve accompanies SUPERIOR THYROID ARTERY superficially.'},
+  {cat:'neck_rev',q:'TRAP: ICA branches in cervical part?',a:'ICA = ZERO branches in cervical part. ECA = 8 branches.'},
+  {cat:'neck_rev',q:'TRAP: Inferior thyroid artery related to which nerve?',a:'RECURRENT LARYNGEAL NERVE (surgically important). NOT the superior thyroid artery.'},
+  {cat:'neck_rev',q:'TRAP: Which salivary gland has 8-20 small ducts?',a:'SUBLINGUAL GLAND (8-20 ducts on sublingual fold). Submandibular = ONE duct (Wharton\'s duct).'},
+  {cat:'neck_rev',q:'TRAP: Digastric — anterior vs. posterior belly nerve?',a:'ANTERIOR = nerve to mylohyoid (branch of inferior alveolar N.).\nPOSTERIOR = FACIAL NERVE. Different nerves!'},
+  {cat:'neck_rev',q:'TRAP: Where is the superior salivary nucleus?',a:'PONS (NOT medulla). Inferior salivary nucleus = medulla (supplies parotid via CN IX).'},
+  {cat:'neck_rev',q:'TRAP: Carotid sheath — pretracheal vs. prevertebral?',a:'ANTERIORLY = continuous with PRETRACHEAL fascia. POSTERIORLY = continuous with PREVERTEBRAL fascia.'},
+  {cat:'neck_rev',q:'TRAP: Contents of upper vs. lower carotid sheath?',a:'UPPER (above post. belly digastric) = ICA + lower 4 CNs (9,10,11,12). LOWER = CCA + vagus N. only. IJV in BOTH parts posterolaterally.'},
+  {cat:'neck_rev',q:'TRAP: Right CCA arises from?',a:'BRACHIOCEPHALIC (innominate) artery. Left CCA from arch of AORTA.'},
+  {cat:'neck_rev',q:'TRAP: Pyramidal lobe — connected to + which side?',a:'Connected to hyoid bone by LEVATOR GLANDULAE THYROIDAE. Projects to LEFT of midline.'},
+  {cat:'neck_rev',q:'TRAP: Thyroidae ima — present? Parent vessel? Supplies?',a:'NOT ALWAYS PRESENT. Branch of ARCH OF AORTA. Single artery. Supplies the ISTHMUS.'},
+  {cat:'neck_rev',q:'TRAP: Lingual nerve relation to submandibular duct?',a:'Lingual nerve passes ABOVE the duct, then HOOKS AROUND it. Duct = INFERIOR relation of submandibular ganglion.'},
+  {cat:'neck_rev',q:'TRAP: Submental triangle — paired or unpaired?',a:'UNPAIRED — single midline triangle. ALL other neck triangles are paired.'},
+  {cat:'neck_rev',q:'TRAP: Platysma — origin vs. insertion?',a:'ORIGIN = deep fascia of upper pectoralis major + deltoid. INSERTION = base of mandible + angle of mouth.'},
+  {cat:'neck_rev',q:'TRAP: EJV — where does it end?',a:'SUBCLAVIAN VEIN just above middle of clavicle. NOT in IJV.'},
+  {cat:'neck_rev',q:'TRAP: Motor nerve of the posterior triangle?',a:'SPINAL ACCESSORY NERVE (CN XI) — motor to SCM and trapezius. Cutaneous cervical plexus branches are SENSORY.'},
+  {cat:'neck_rev',q:'TRAP: Carotid body vs. sinus?',a:'CAROTID SINUS = BARORECEPTORS (BLOOD PRESSURE). CAROTID BODY = CHEMORECEPTORS (pH and CO2). Both supplied by CN IX.'},
+  {cat:'neck_rev',q:'COMPARE: Facial artery branches in neck (4) vs. face (4)?',a:'NECK = ascending palatine, tonsillar, submental, glandular (submandibular).\nFACE = inferior labial, superior labial, lateral nasal, angular (terminal).'},
+  {cat:'neck_rev',q:'COMPARE: Genioglossus (superior spine) vs. Geniohyoid (inferior spine)?',a:'GENIOGLOSSUS = FAN-SHAPED, SUPERIOR mental spine → protrusion (CN XII).\nGENIOHYOID = INFERIOR mental spine → elevation of hyoid (C1 via CN XII).'},
+  {cat:'neck_rev',q:'COMPARE: Hyoglossus vs. Styloglossus vs. Genioglossus actions?',a:'HYOGLOSSUS = DEPRESSION of tongue.\nSTYLOGLOSSUS = RETRACTION + ELEVATION.\nGENIOGLOSSUS = PROTRUSION.'},
+  {cat:'neck_rev',q:'ALL tongue muscles CN XII EXCEPT?',a:'PALATOGLOSSUS = supplied by VAGUS (CN X) via pharyngeal plexus.'},
+  {cat:'neck_rev',q:'QUICK RECALL: 4 deep fascia layers + one structure each?',a:'Investing = SCM + trapezius.\nPretracheal = thyroid (false capsule) + strap muscles.\nPrevertebral = scalene muscles.\nCarotid sheath = CCA/ICA, IJV, vagus/CNs 9-12.'},
+  {cat:'neck_rev',q:'QUICK RECALL: IJV 6 tributaries?',a:'Inferior petrosal sinus | Pharyngeal veins | Lingual vein | Facial (common facial) vein | Superior thyroid vein | Middle thyroid vein. Mnemonic: "IPLFSM."'},
+  {cat:'neck_rev',q:'QUICK RECALL: Ansa cervicalis (C1,2,3) supplies?',a:'ALL infrahyoid EXCEPT thyrohyoid: Sternohyoid, Sternothyroid, Omohyoid. C1 also supplies geniohyoid + thyrohyoid (via CN XII branch).'},
+  {cat:'neck_rev',q:'MASTER EXAM TRAPS — Neck Anatomy',a:'Thyrohyoid → C1 via CN XII (NOT ansa)\nInferior thyroid vein → left brachiocephalic (NOT IJV)\nSuperior laryngeal A. → pierces with INTERNAL laryngeal N.\nICA = ZERO branches in neck; ECA = 8\nInferior thyroid A. → related to RECURRENT laryngeal N.\nSublingual = 8-20 ducts; Submandibular = 1 duct\nAnt. belly digastric → nerve to mylohyoid; Post. → facial N.\nSuperior salivary nucleus = PONS\nPyramidal lobe → LEFT of midline\nThyroidae ima → NOT always present → arch of aorta\nSubmental triangle = UNPAIRED\nPlatysma: ORIGIN = pectoralis/deltoid; INSERTION = mandible/mouth\nEJV → SUBCLAVIAN vein (NOT IJV)\nCarotid sinus = BARORECEPTORS; Carotid body = CHEMORECEPTORS'},
+];
+
+/* ══════════════════════════════════════════════════
+   HEAD & NECK P4 — NASAL/PHARYNX/TONGUE FLASH CARDS (60)
+══════════════════════════════════════════════════ */
+const HN4_NASAL = [
+  {cat:'nasal',q:'Nasal cavity — 4 meatuses/recesses and what each RECEIVES?',a:'INFERIOR MEATUS → NASOLACRIMAL DUCT.\nMIDDLE MEATUS → bulla ethmoidalis (middle ethmoidal) + hiatus semilunaris: ant. ethmoidal + frontal + maxillary sinuses.\nSUPERIOR MEATUS → POST. ETHMOIDAL SINUS.\nSPHENOETHMOIDAL RECESS (above sup. concha) → SPHENOIDAL SINUS.'},
+  {cat:'nasal',q:'Nasal septum — 3 parts?',a:'ANTERIOR → SEPTAL CARTILAGE.\nPOSTERO-SUPERIOR → PERPENDICULAR PLATE OF ETHMOID.\nPOSTERO-INFERIOR → VOMER bone.'},
+  {cat:'nasal',q:'Nasal cavity ROOF — formed by what, front to back?',a:'Nasal bone → Cribriform plate of ethmoid → Sphenoid body.\nFLOOR = hard palate.'},
+  {cat:'nasal',q:'Conchae — which are ethmoid bone, which is separate?',a:'SUPERIOR + MIDDLE conchae = parts of ETHMOID bone.\nINFERIOR concha = SEPARATE BONE (largest; smallest = superior concha).'},
+  {cat:'nasal',q:"Kiesselbach's plexus — location + 4 arteries?",a:'Location = ANTERIOR NASAL SEPTUM (medial wall).\n1. Anterior ethmoidal (OPHTHALMIC/ICA)\n2. Sphenopalatine (MAXILLARY)\n3. Greater palatine (MAXILLARY)\n4. Septal br. of superior labial (FACIAL/ECA).'},
+  {cat:'nasal',q:'Nasal cavity arterial supply — 3 sources?',a:'1. Ant. + post. ethmoidal arteries → from OPHTHALMIC artery.\n2. GREATER PALATINE + SPHENOPALATINE → from MAXILLARY artery.\n3. Septal br. of SUPERIOR LABIAL → from FACIAL artery.'},
+  {cat:'nasal',q:'Nasal cavity lymph drainage — anterior vs. posterior?',a:'ANTERIOR part → SUBMANDIBULAR LN.\nPOSTERIOR part → RETROPHARYNGEAL + UPPER DEEP CERVICAL LN.'},
+  {cat:'nasal',q:'Lateral wall of nasal cavity — nerve supply?',a:'SPECIAL (smell) = OLFACTORY nerve.\nGENERAL (V): Ant. ethmoidal N. | Greater palatine N. | Short sphenopalatine N. | Ant. superior alveolar N. (infraorbital branch).'},
+  {cat:'nasal',q:'Medial wall (septum) — nerve supply?',a:'SPECIAL = OLFACTORY.\nGENERAL (V): Ant. ethmoidal N. | LONG sphenopalatine N. | Short sphenopalatine N.\nKEY: LONG sph. palatine = SEPTUM; SHORT = LATERAL WALL.'},
+  {cat:'nasal',q:'Paranasal sinuses — 4 functions?',a:'1. Decrease skull weight  2. Resonance to voice  3. Warm + humidify air  4. Protect brain against temperature changes.'},
+  {cat:'nasal',q:'Middle meatus — 2 key structures within it?',a:'BULLA ETHMOIDALIS = bony elevation receiving middle ethmoidal sinus.\nHIATUS SEMILUNARIS = curved groove BELOW the bulla, receiving: ant. ethmoidal + frontal + maxillary sinuses.'},
+  {cat:'nasal',q:"TRAP: Kiesselbach's plexus — which wall?",a:'MEDIAL wall (nasal septum), NOT lateral wall. Located in the ANTERIOR part of the septum.'},
+  {cat:'nasal',q:'TRAP: Long vs. short sphenopalatine nerve — which wall?',a:'LONG sphenopalatine → MEDIAL wall (septum).\nSHORT sphenopalatine → LATERAL wall.'},
+  {cat:'nasal',q:'TRAP: Which meatus receives sphenoidal sinus?',a:'NONE of the standard 3 meatuses. Drains into SPHENOETHMOIDAL RECESS (above superior concha, below roof of skull).'},
+  {cat:'nasal',q:'Nasolacrimal duct significance?',a:'Tears drain: lacrimal sac → nasolacrimal duct → inferior meatus. Explains why nasal secretion increases when crying.'},
+  {cat:'nasal',q:'Superior concha — special notes?',a:'SMALLEST concha. Usually FUSES POSTERIORLY with middle concha. Superior + middle = ethmoid. Inferior = separate bone, largest.'},
+  {cat:'nasal',q:'Nasal venous drainage?',a:'Corresponds to the arteries (ethmoidal veins → ophthalmic vein; sphenopalatine vein → pterygoid plexus).'},
+  {cat:'nasal',q:'MASTER: Nasal meatuses quick recall?',a:'Inferior → nasolacrimal duct only.\nMiddle → ant. ethmoidal + frontal + maxillary + middle ethmoidal.\nSuperior → post. ethmoidal.\nSph.-eth. recess → sphenoidal.\nMnemonic: "I Max My Super Sphere."'},
+];
+const HN4_PHAR = [
+  {cat:'pharynx',q:'Pharynx — definition + extent?',a:'FUNNEL-SHAPED MUSCULAR TUBE. Starts from BASE OF SKULL. Ends at C6 VERTEBRA (becomes ESOPHAGUS). Located behind nasal cavity, oral cavity, and larynx.'},
+  {cat:'pharynx',q:'Pharynx wall — 5 layers from inside out?',a:'1. Mucosa  2. Submucosa  3. Pharyngeo-basilar fascia  4. Pharyngeal muscles  5. Bucco-pharyngeal fascia.'},
+  {cat:'pharynx',q:'Pharyngeal muscles — 2 groups?',a:'TRANSVERSE (circular) = 3 CONSTRICTORS: superior, middle, inferior.\nLONGITUDINAL = 3 PHARYNGEUS: stylo-pharyngeus, palato-pharyngeus, salpingo-pharyngeus.'},
+  {cat:'pharynx',q:'Pharyngeal muscles nerve supply — rule + exception?',a:'ALL pharyngeal muscles = PHARYNGEAL PLEXUS (motor from vagus, CN X).\nEXCEPTION: STYLO-PHARYNGEUS = GLOSSOPHARYNGEAL NERVE (CN IX).'},
+  {cat:'pharynx',q:'Pharyngeal plexus — formation?',a:'1. Pharyngeal branches of CN IX (sensory).\n2. Pharyngeal branches of CN X (motor + parasympathetic).\n3. SUPERIOR CERVICAL GANGLION (sympathetic).\nPlexus lies on OUTER SURFACE OF MIDDLE CONSTRICTOR.'},
+  {cat:'pharynx',q:'Pharynx arterial supply — 3 sources?',a:'1. Ascending pharyngeal br. of ECA.\n2. Ascending palatine + tonsillar brs. of FACIAL artery.\n3. Pharyngeal brs. of SUPERIOR + INFERIOR THYROID arteries.'},
+  {cat:'pharynx',q:'Pharynx venous + lymph drainage?',a:'VENOUS: Pharyngeal plexus of veins → FACIAL VEIN + IJV.\nLYMPH: RETROPHARYNGEAL LNs + DEEP CERVICAL LNs.'},
+  {cat:'pharynx',q:'Nasopharynx — 5 features?',a:'1. Nasopharyngeal tonsil (adenoid) on posterior wall.\n2. Opening of EUSTACHIAN TUBE at level of INFERIOR CONCHA.\n3. Tubal elevation (upper + posterior lips of opening).\n4. Salpingo-pharyngeal fold (lower part of tubal elevation).\n5. Pharyngeal recess (fossa of Rosenmuller) — behind salpingo-pharyngeal fold.'},
+  {cat:'pharynx',q:"Oropharynx — key features?",a:"Lies behind ORAL CAVITY. Contains PALATINE TONSILS between palatoglossal fold (ant. pillar) + palatopharyngeal fold (post. pillar).\nWith lingual + nasopharyngeal tonsil = WALDEYER'S RING."},
+  {cat:'pharynx',q:"Waldeyer's ring — components?",a:"1. Nasopharyngeal tonsil (adenoid) — posterior wall nasopharynx.\n2. 2x Palatine tonsils — oropharynx.\n3. Lingual tonsil — posterior 1/3 of tongue.\n4. 2x Tubal tonsils — around Eustachian tube openings."},
+];
+const HN4_ORAL = [
+  {cat:'oral',q:'Oral cavity — 2 parts + definition of each?',a:'VESTIBULE (labial cavity) = space between GUMS and LIPS + CHEEKS.\nORAL CAVITY PROPER (buccal cavity) = Roof: palate. Floor: tongue + sublingual gland + mylohyoid. Sides: teeth.'},
+  {cat:'oral',q:'Hard palate — bones + proportions?',a:'ANTERIOR 3/4 = palatine processes of MAXILLA.\nPOSTERIOR 1/4 = horizontal plate of PALATINE BONE.\nDivided by MEDIAN PALATINE SUTURE (ends anteriorly in INCISIVE FOSSA).'},
+  {cat:'oral',q:'Soft palate — structure + muscles?',a:'Formed by: Palatine APONEUROSIS (= aponeurosis of TENSOR PALATI). Muscles: levator palati, tensor palati, palatoglossus, palato-pharyngeus, musculus uvulae.'},
+  {cat:'oral',q:'Palate motor nerve supply — rule + exception?',a:'ALL palate muscles = PALATINE PLEXUS (accessory cranial N. through VAGUS, CN X).\nEXCEPTION: TENSOR PALATI = MANDIBULAR NERVE (V3) via nerve to MEDIAL PTERYGOID.'},
+  {cat:'oral',q:'Palate sensory nerve supply?',a:'GREATER PALATINE nerve + LESSER PALATINE nerve + LONG SPHENOPALATINE nerve.\n(All branches of maxillary nerve, V2.)'},
+  {cat:'oral',q:'TRAP: Which palate muscle NOT supplied by palatine plexus?',a:'TENSOR PALATI — supplied by MANDIBULAR NERVE (V3) via nerve to medial pterygoid. All others = palatine plexus.'},
+  {cat:'oral',q:'Palatine aponeurosis — what is it?',a:'= APONEUROSIS OF TENSOR PALATI. Attaches to posterior free border of hard palate. Framework giving attachment to ALL other soft palate muscles.'},
+  {cat:'oral',q:'Vestibule vs. Oral cavity proper — alternative names?',a:'VESTIBULE = LABIAL CAVITY.\nORAL CAVITY PROPER = BUCCAL CAVITY.'},
+  {cat:'oral',q:'What is at the incisive fossa?',a:'Anterior end of the median palatine suture. Incisive foramen transmits NASOPALATINE NERVE and greater palatine vessels.'},
+];
+const HN4_TON = [
+  {cat:'tongue',q:'Tongue — 4 parts?',a:'ROOT (post. part, mainly in oropharynx) | TIPS + MARGINS | VENTRAL (lower) SURFACE | DORSAL (upper) SURFACE (divided by sulcus terminalis into ant. 2/3 + post. 1/3).'},
+  {cat:'tongue',q:'Sulcus terminalis + foramen caecum?',a:'V-SHAPED GROOVE on dorsal surface. Apex directed posteriorly → FORAMEN CAECUM. Divides: ANT. 2/3 = palatine/buccal part (oral cavity); POST. 1/3 = pharyngeal part (oropharynx).'},
+  {cat:'tongue',q:'Ventral surface of tongue — 3 features?',a:'1. FRENULUM LINGUAE = raised midline fold.\n2. DEEP LINGUAL VEIN = on each side of midline.\n3. FIMBRIATED FOLD = lateral to deep lingual vein.'},
+  {cat:'tongue',q:'Compare ANT 2/3 vs POST 1/3 of tongue?',a:'ANT 2/3: palatine/buccal | oral cavity proper | filiform+fungiform+vallate papillae | no lingual tonsils | 1st pharyngeal arch | lingual N. (general) + chorda tympani (taste).\nPOST 1/3: pharyngeal | oropharynx | NO papillae | lingual tonsils | 3rd pharyngeal arch | CN IX (all sensations).'},
+  {cat:'tongue',q:'Tongue papillae — 3 types on anterior 2/3?',a:'FILIFORM = most numerous; NO taste buds; TOUCH/texture.\nFUNGIFORM = scattered; have taste buds.\nVALLATE (circumvallate) = LARGEST; V-shape just ANTERIOR to sulcus terminalis; have taste buds.'},
+  {cat:'tongue',q:'Tongue sensory nerve supply — complete summary?',a:'ANT 2/3: TASTE = CHORDA TYMPANI (facial N., CN VII). GENERAL = LINGUAL NERVE (V3, mandibular).\nPOST 1/3: ALL sensation (taste + general) = GLOSSOPHARYNGEAL (CN IX).'},
+  {cat:'tongue',q:'Tongue motor nerve supply — rule + exception?',a:'ALL tongue muscles = HYPOGLOSSAL NERVE (CN XII).\nEXCEPTION: PALATOGLOSSUS = PALATINE PLEXUS (cranial accessory N. through VAGUS, CN X).'},
+  {cat:'tongue',q:'Intrinsic tongue muscles — function + types?',a:'Change the SHAPE of tongue (NOT position). Inside tongue.\nTypes: Vertical | Transverse | Superior longitudinal | Inferior longitudinal. ALL = CN XII.'},
+  {cat:'tongue',q:'Extrinsic tongue muscles — function + 4 muscles?',a:'Change POSITION. ALL CN XII EXCEPT palatoglossus (vagus/CN X).\nGENIOGLOSSUS (fan-shaped) = superior genial tubercle → PROTRUSION.\nHYOGLOSSUS (quadrilateral) = hyoid bone → DEPRESSION.\nSTYLOGLOSSUS = styloid → RETRACTION + ELEVATION.\nPALATOGLOSSUS = palatine aponeurosis → ELEVATION of post. tongue.'},
+  {cat:'tongue',q:'Tongue lymph drainage?',a:'ANT 2/3 TIP → SUBMENTAL LN.\nANT 2/3 SIDES → SUBMANDIBULAR → UPPER DEEP CERVICAL LN.\nPOST 1/3 → UPPER DEEP CERVICAL LN.'},
+  {cat:'tongue',q:'Blood supply of tongue?',a:'ARTERY = LINGUAL ARTERY (branch of ECA). VEIN = LINGUAL VEIN (→ IJV). Lingual artery accompanies hypoglossal nerve on hyoglossus muscle.'},
+  {cat:'tongue',q:'TRAP: Tongue taste (anterior 2/3) — which nerve exactly?',a:'CHORDA TYMPANI (branch of FACIAL NERVE, CN VII), NOT the lingual nerve. Lingual nerve (V3) = GENERAL sensation only.'},
+  {cat:'tongue',q:'TRAP: Palatoglossus — nerve supply + action?',a:'N/S = PALATINE PLEXUS (vagus, CN X) — only tongue muscle NOT CN XII. Action = ELEVATION of posterior tongue (closes oropharyngeal isthmus).'},
+  {cat:'tongue',q:'TRAP: Intrinsic vs. extrinsic muscles?',a:'INTRINSIC = inside tongue, change SHAPE. EXTRINSIC = outside tongue, change POSITION. ALL = CN XII except palatoglossus (CN X).'},
+  {cat:'tongue',q:'Embryology of tongue — arch origins?',a:'ANT 2/3 = 1ST PHARYNGEAL ARCH → V3 (lingual nerve) + chorda tympani (VII).\nPOST 1/3 = 3RD PHARYNGEAL ARCH → CN IX.'},
+  {cat:'tongue',q:'Genioglossus — full details?',a:'Shape = FAN-SHAPED. Origin = SUPERIOR genial tubercle. Insertion = tip + dorsum of tongue + hyoid bone. N/S = CN XII. Action = PROTRUSION. Largest extrinsic tongue muscle.'},
+  {cat:'tongue',q:'Which papillae have taste buds?',a:'FUNGIFORM (scattered across ant. 2/3) + VALLATE/CIRCUMVALLATE (V-shaped row in front of sulcus terminalis). FILIFORM papillae = NO taste buds (touch only).'},
+];
+const HN4_REV = [
+  {cat:'npt_rev',q:'MASTER SUMMARY — Nerve supply of tongue?',a:'MOTOR: All = CN XII. EXCEPT palatoglossus = CN X (vagus/palatine plexus).\nSENSORY (general): Ant. 2/3 = lingual N. (V3). Post. 1/3 = CN IX.\nSENSORY (taste): Ant. 2/3 = chorda tympani (VII). Post. 1/3 = CN IX.'},
+  {cat:'npt_rev',q:'MASTER SUMMARY — Palate nerve supply?',a:'MOTOR: All = palatine plexus (accessory through vagus). EXCEPT tensor palati = V3 (nerve to medial pterygoid).\nSENSORY: Greater palatine + lesser palatine + long sphenopalatine nerves.'},
+  {cat:'npt_rev',q:'MASTER SUMMARY — Pharynx nerve supply?',a:'ALL muscles = pharyngeal plexus (CN X motor; CN IX sensory; sup. cervical ganglion sympathetic).\nEXCEPT: stylo-pharyngeus = CN IX (glossopharyngeal).'},
+  {cat:'npt_rev',q:'MASTER EXAM TRAPS — Nasal/Pharynx/Tongue?',a:"Kiesselbach's = SEPTAL (medial) wall, NOT lateral.\nSphenoidal sinus → sphenoethmoidal recess (NOT superior meatus).\nInferior concha = SEPARATE BONE.\nStylo-pharyngeus = CN IX (not pharyngeal plexus).\nTensor palati = V3 mandibular (not palatine plexus).\nTaste ant. 2/3 = CHORDA TYMPANI (not lingual nerve).\nPalatoglossus = CN X vagus (not CN XII).\nEustachian tube opens at INFERIOR concha.\nPost. 1/3 tongue = CN IX for ALL sensations.\nFiliform papillae = NO taste buds (touch only).\nIntrinsic = change SHAPE; Extrinsic = change POSITION.\nLONG sph. palatine = septum; SHORT = lateral wall."},
+];
+
+/* ══════════════════════════════════════════════════
+   HEAD & NECK P3 — QUIZ DATA
+══════════════════════════════════════════════════ */
+const HN3_MUSCLES_QUIZ = [
+  {type:'mcq',q:'All of the following are TRUE about the SCM EXCEPT:',opts:['Sternal head arises from manubrium sterni (rounded)','Clavicular head arises from medial 1/3 of upper surface of clavicle','Inserts into mastoid process and superior nuchal line of occipital bone','Supplied by ansa cervicalis (C1, 2, 3)'],ans:3,exp:'SCM is supplied by SPINAL ACCESSORY NERVE (CN XI) + C2,C3 anterior rami for proprioception. Ansa cervicalis supplies infrahyoid (strap) muscles, NOT the SCM.'},
+  {type:'mcq',q:'All of the following are TRUE about infrahyoid muscles EXCEPT:',opts:['Sternohyoid: origin = post. surface of manubrium sterni; action = depression of hyoid','Sternothyroid: inserts into oblique line on lamina of thyroid cartilage; action = depression of larynx','Thyrohyoid: supplied by ansa cervicalis (C1,2,3)','Omohyoid: supplied by ansa cervicalis (C1,2,3); action = depression of hyoid'],ans:2,exp:'Thyrohyoid is the ONLY infrahyoid muscle NOT supplied by ansa cervicalis. It is supplied by C1 via a branch of the hypoglossal nerve.'},
+  {type:'mcq',q:'All of the following are suprahyoid muscles EXCEPT:',opts:['Stylohyoid — supplied by facial nerve','Mylohyoid — supplied by nerve to mylohyoid (br. of inferior alveolar N.)','Geniohyoid — supplied by C1 via branch of hypoglossal nerve','Omohyoid — supplied by ansa cervicalis (C1,2,3)'],ans:3,exp:'Omohyoid is an INFRAHYOID (strap) muscle, NOT suprahyoid. Suprahyoid muscles: stylohyoid, mylohyoid, geniohyoid, hyoglossus, and digastric.'},
+  {type:'mcq',q:'Regarding the digastric muscle, all are TRUE EXCEPT:',opts:['Anterior belly arises from digastric fossa of mandible near the median plane','Posterior belly arises from medial surface of mastoid process of temporal bone','Both anterior and posterior bellies are supplied by the facial nerve','Action: depression of mandible or elevation of hyoid bone'],ans:2,exp:'Anterior belly is supplied by the nerve to MYLOHYOID (branch of inferior alveolar N.), NOT the facial nerve. Only the POSTERIOR belly is supplied by the facial nerve.'},
+  {type:'mcq',q:'All of the following are TRUE about Scalenus Anterior EXCEPT:',opts:['Origin: anterior tubercles of transverse processes of C3,4,5,6 vertebrae','Insertion: scalene tubercle on inner border of 1st rib','Posterior relation: subclavian artery (2nd part) and roots of brachial plexus','Medial relation: the phrenic nerve descending on its anterior surface'],ans:3,exp:'Phrenic nerve is an ANTERIOR relation (NOT medial) of scalenus anterior. It descends on the ANTERIOR surface.'},
+  {type:'mcq',q:'Regarding Scalenus Medius, all are TRUE EXCEPT:',opts:['Origin: posterior tubercles of transverse processes of C1-C6','Insertion: upper surface of 1st rib BEHIND the groove for subclavian artery','N/S: branches of anterior rami of cervical nerves','Insertion into outer surface of 2nd rib'],ans:3,exp:'Insertion into outer surface of 2nd rib belongs to SCALENUS POSTERIOR. Scalenus medius inserts into upper surface of 1st rib BEHIND groove for subclavian artery.'},
+  {type:'tf',q:'Both sternomastoid muscles acting together flex the neck.',ans:true,exp:'TRUE — When both SCM muscles contract, they flex the neck. One SCM alone bends the head to the same side and turns the face to the opposite side.'},
+  {type:'tf',q:'The SCM is supplied solely by the spinal part of the accessory nerve.',ans:false,exp:'FALSE — SCM is supplied by spinal accessory nerve (CN XI) PLUS C2 & C3 anterior rami for proprioception.'},
+  {type:'tf',q:'The thyrohyoid muscle is supplied by ansa cervicalis (C1,2,3).',ans:false,exp:'FALSE — Thyrohyoid is the ONLY infrahyoid muscle NOT supplied by ansa cervicalis. It is supplied by C1 via a branch of the hypoglossal nerve.'},
+  {type:'tf',q:'The omohyoid has two bellies united by an intermediate tendon held by a loop of deep fascia to the clavicle and 1st rib.',ans:true,exp:'TRUE — Both omohyoid bellies insert into the intermediate tendon, held in position by a loop of deep fascia to the clavicle and 1st rib. N/S: ansa cervicalis (C1,2,3).'},
+  {type:'tf',q:'The anterior belly of digastric is supplied by the facial nerve.',ans:false,exp:'FALSE — The anterior belly is supplied by the nerve to mylohyoid (branch of inferior alveolar nerve). Only the POSTERIOR belly is supplied by the facial nerve.'},
+  {type:'tf',q:'The stylohyoid is pierced near its insertion by the intermediate tendon of the digastric.',ans:true,exp:'TRUE — The intermediate tendon of digastric pierces the stylohyoid near its insertion into the hyoid bone.'},
+  {type:'tf',q:'The mylohyoid is called diaphragmatica oris because it forms the floor of the mouth.',ans:true,exp:'TRUE — Mylohyoid forms the muscular floor of the oral cavity. Posterior fibers (1/4) insert into hyoid; anterior fibers (3/4) insert into the mylohyoid raphe.'},
+  {type:'tf',q:'The geniohyoid originates from the superior mental spine (superior genial tubercle).',ans:false,exp:'FALSE — Geniohyoid originates from the INFERIOR mental spine. The GENIOGLOSSUS originates from the superior mental spine.'},
+  {type:'tf',q:'The genioglossus is a fan-shaped muscle whose action is protrusion of the tongue.',ans:true,exp:'TRUE — Genioglossus: fan-shaped, origin = superior mental spine, N/S = hypoglossal (CN XII), action = protrusion of tongue.'},
+  {type:'tf',q:'The hyoglossus muscle depresses the tongue.',ans:true,exp:'TRUE — Hyoglossus: quadrilateral, origin = upper border of body and greater cornu of hyoid, N/S = hypoglossal nerve, action = depression of tongue.'},
+  {type:'tf',q:'The styloglossus retracts and elevates the tongue.',ans:true,exp:'TRUE — Styloglossus: origin = styloid process, N/S = hypoglossal nerve, action = retraction and elevation of tongue.'},
+  {type:'tf',q:'The platysma originates from the base of mandible.',ans:false,exp:'FALSE — Platysma ORIGINATES from deep fascia covering upper pectoralis major and deltoid. It INSERTS into base of mandible and angle of mouth.'},
+  {type:'tf',q:'The platysma is supplied by the cervical branch of the facial nerve.',ans:true,exp:'TRUE — Platysma N/S = cervical branch of facial nerve. Action: depression of mandible and angles of mouth.'},
+  {type:'tf',q:'The phrenic nerve lies posterior to the scalenus anterior muscle.',ans:false,exp:'FALSE — Phrenic nerve lies ANTERIOR to scalenus anterior. It descends on the anterior surface of scalenus anterior under prevertebral fascia.'},
+  {type:'tf',q:'Scalenus anterior originates from anterior tubercles of transverse processes of C3,4,5,6.',ans:true,exp:'TRUE — Scalenus anterior: origin = anterior tubercles of TP of C3,4,5,6. Insertion = scalene tubercle on inner border of 1st rib.'},
+  {type:'tf',q:'The scalenus medius inserts into the upper surface of 1st rib behind the groove for the subclavian artery.',ans:true,exp:'TRUE — Scalenus medius inserts into upper surface of 1st rib BEHIND groove for subclavian artery.'},
+];
+const HN3_VESSELS_QUIZ = [
+  {type:'mcq',q:'All of the following are tributaries of the External Jugular Vein EXCEPT:',opts:['Posterior auricular vein','Posterior division of retromandibular vein','Transverse cervical vein','Lingual vein'],ans:3,exp:'Lingual vein is a tributary of the INTERNAL JUGULAR VEIN. EJV tributaries: posterior auricular, post. division of retromandibular, post. external jugular, anterior jugular, transverse cervical, suprascapular veins.'},
+  {type:'mcq',q:'All of the following are TRUE about the Internal Jugular Vein EXCEPT:',opts:['Begins as continuation of sigmoid sinus at jugular foramen','Has dilatations: superior bulb and inferior bulb','Bicuspid valve lies above the inferior bulb','Ends by uniting with subclavian vein behind the sternoclavicular joint'],ans:3,exp:'IJV ends BEHIND THE MEDIAL END OF THE CLAVICLE to form the brachiocephalic (innominate) vein, not behind the sternoclavicular joint.'},
+  {type:'mcq',q:'All of the following are tributaries of the Internal Jugular Vein EXCEPT:',opts:['Inferior petrosal sinus','Pharyngeal veins','Superior thyroid vein','Inferior thyroid vein'],ans:3,exp:'Inferior thyroid vein drains into the LEFT BRACHIOCEPHALIC vein. IJV tributaries: inferior petrosal sinus, pharyngeal veins, lingual vein, facial vein, superior thyroid vein, middle thyroid vein.'},
+  {type:'mcq',q:'All of the following are TRUE about the Common Carotid Artery EXCEPT:',opts:['Left CCA arises from arch of aorta','Right CCA arises from brachiocephalic (innominate) artery','Divides into ICA and ECA at upper border of thyroid cartilage (disc C3-C4)','Gives several branches in the neck before its terminal bifurcation'],ans:3,exp:'CCA gives NO BRANCHES in the neck. It ascends and divides into ICA and ECA at disc C3-C4.'},
+  {type:'mcq',q:'All of the following structures separate the ECA from the ICA in the neck EXCEPT:',opts:['Styloid process and stylo-glossus muscle','Stylo-pharyngeus muscle and glosso-pharyngeal nerve','Pharyngeal branch of vagus nerve and part of parotid gland','Superior laryngeal nerve'],ans:3,exp:'The 6 structures separating ECA from ICA: styloid process, stylo-glossus, stylo-pharyngeus, glossopharyngeal nerve, pharyngeal branch of vagus, and part of parotid gland. Superior laryngeal nerve is NOT among them.'},
+  {type:'mcq',q:'All of the following are branches of the External Carotid Artery EXCEPT:',opts:['Superior thyroid artery','Lingual artery','Inferior thyroid artery','Facial artery'],ans:2,exp:'Inferior thyroid artery is a branch of the THYROCERVICAL TRUNK (1st part of subclavian), NOT the ECA. The ECA has 8 branches.'},
+  {type:'mcq',q:'Regarding the Superior Thyroid Artery, all are TRUE EXCEPT:',opts:['Arises from anterior aspect of ECA below greater horn of hyoid','Accompanied by external laryngeal nerve which lies superficial to it','Glandular branches supply upper 1/3 of lateral lobe and upper 1/4 of isthmus','Superior laryngeal artery pierces thyrohyoid membrane with the external laryngeal nerve'],ans:3,exp:'Superior laryngeal artery pierces the thyrohyoid membrane with the INTERNAL laryngeal nerve. The EXTERNAL laryngeal nerve accompanies the superior thyroid artery superficially.'},
+  {type:'mcq',q:'All of the following are TRUE about the Lingual Artery EXCEPT:',opts:['Arises from anterior aspect of ECA opposite greater horn of hyoid','Divided by hyoglossus muscle into 3 parts with 2nd part behind the muscle','Sublingual artery arises from the 3rd part','Suprahyoid artery arises from the 2nd part'],ans:3,exp:'Suprahyoid artery arises from the 1ST PART. 2nd part (behind hyoglossus) gives 2 dorsalis linguae arteries. 3rd part gives sublingual + deep artery of tongue.'},
+  {type:'mcq',q:'Regarding branches of the Facial Artery given in the NECK, all are TRUE EXCEPT:',opts:['Ascending palatine artery','Tonsillar branch','Submental artery','Superior labial artery'],ans:3,exp:'Superior labial artery is given in the FACE. Neck branches: ascending palatine, tonsillar branch, submental artery, and glandular (submandibular) branch.'},
+  {type:'mcq',q:'Regarding the Internal Carotid Artery, all are TRUE EXCEPT:',opts:['Terminal branch of CCA at disc between C3-C4','Gives no branches in its cervical part','Divided into 4 parts: cervical, intra-petrous, intra-cavernous, intra-cranial','Ends by giving the anterior and POSTERIOR cerebral arteries as terminal branches'],ans:3,exp:'ICA ends by giving ANTERIOR CEREBRAL and MIDDLE CEREBRAL arteries. The POSTERIOR cerebral artery arises from the basilar artery.'},
+  {type:'mcq',q:'Regarding layers of the Deep Fascia of the Neck, all are TRUE EXCEPT:',opts:['Investing layer encloses sternomastoid and trapezius; splits to form spaces','Pretracheal layer: false capsule of thyroid, encloses infrahyoid muscles anteriorly','Carotid sheath: contains carotid arteries, IJV, and vagus nerve in lower part','Prevertebral layer invests the infrahyoid (strap) muscles'],ans:3,exp:'PREVERTEBRAL layer invests the PREVERTEBRAL muscles (scalene muscles, longus colli, longus capitis). Infrahyoid muscles are related to the pretracheal layer.'},
+  {type:'mcq',q:'All of the following are TRUE about the Carotid Sheath EXCEPT:',opts:['Above: attached to base of skull around carotid and jugular foramina','Below: blends with adventitia of arch of aorta','Anteriorly: continuous with pretracheal fascia','Posteriorly: continuous with pretracheal fascia'],ans:3,exp:'Carotid sheath is ANTERIORLY continuous with pretracheal fascia and POSTERIORLY continuous with PREVERTEBRAL fascia.'},
+  {type:'mcq',q:'All of the following are contents of the UPPER part of the Carotid Sheath EXCEPT:',opts:['Internal carotid artery (anteromedially)','Internal jugular vein (posterolaterally)','Lower 4 cranial nerves (9,10,11,12) between ICA and IJV','Common carotid artery (anteromedially)'],ans:3,exp:'Upper part: ICA anteromedially, IJV posterolaterally, lower 4 cranial nerves (9,10,11,12). COMMON CAROTID ARTERY is in the LOWER part of the sheath.'},
+  {type:'mcq',q:'All of the following are contents of the LOWER part of the Carotid Sheath EXCEPT:',opts:['Common carotid artery (anteromedially)','Internal jugular vein (posterolaterally)','Vagus nerve (10th CN) between the CCA and IJV','Phrenic nerve'],ans:3,exp:'Phrenic nerve is NOT in the carotid sheath. It lies on the anterior surface of scalenus anterior. Lower carotid sheath: CCA anteromedially, IJV posterolaterally, vagus nerve (CN X).'},
+  {type:'mcq',q:'Regarding the Superficial Fascia of the Neck, all are TRUE EXCEPT:',opts:['Contains platysma muscle','Contains superficial cutaneous nerves supplying skin','Contains external jugular vein, anterior jugular vein, and jugular arch','Contains only deep cervical lymph nodes (no superficial nodes)'],ans:3,exp:'Superficial fascia contains SUPERFICIAL (superior) CERVICAL lymph nodes. Contents: platysma, superficial cutaneous nerves, superficial veins (EJV, ant. jugular, jugular arch), and superficial cervical lymph nodes.'},
+  {type:'mcq',q:'All of the following are TRUE about the External Jugular Vein EXCEPT:',opts:['Begins below (behind) angle of mandible by union of posterior auricular vein with posterior division of retromandibular vein','Runs superficial to sternomastoid and pierces deep fascia in posterior triangle about 1 inch above clavicle','Surface marking: from angle of mandible to middle of clavicle','Ends by draining into the internal jugular vein'],ans:3,exp:'EJV ends in the SUBCLAVIAN VEIN (just above middle of clavicle), NOT the IJV.'},
+  {type:'tf',q:'The External Jugular Vein ends by draining into the internal jugular vein.',ans:false,exp:'FALSE — EJV ends in the SUBCLAVIAN VEIN just above the middle of the clavicle.'},
+  {type:'tf',q:'The anterior jugular vein starts from the submental plexus of veins under the chin.',ans:true,exp:'TRUE — Anterior jugular starts under chin from submental plexus. The two anterior jugular veins are joined by the jugular arch above the sternum.'},
+  {type:'tf',q:'The deep fascia of the neck condenses in some areas to form 4 layers.',ans:true,exp:'TRUE — Deep fascia of neck = 4 layers: Investing, Pretracheal, Prevertebral, Carotid sheath.'},
+  {type:'tf',q:'The carotid sheath is a condensation of the superficial fascia of the neck.',ans:false,exp:'FALSE — Carotid sheath is a tubular condensation of the DEEP fascia of the neck (4th layer).'},
+  {type:'tf',q:'Pretracheal fascia attaches the thyroid gland to the larynx and trachea, causing it to move with swallowing.',ans:true,exp:'TRUE — Pretracheal fascia (false capsule of thyroid) attaches the gland to the larynx and trachea, so the thyroid moves upward with deglutition.'},
+  {type:'tf',q:'The right common carotid artery arises directly from the arch of the aorta.',ans:false,exp:'FALSE — RIGHT CCA arises from the BRACHIOCEPHALIC (innominate) artery. The LEFT CCA arises directly from the arch of aorta.'},
+  {type:'tf',q:'The carotid sinus contains baroreceptors and is supplied by the glossopharyngeal nerve.',ans:true,exp:'TRUE — Carotid sinus = dilatation at CCA bifurcation, contains baroreceptors, supplied by glossopharyngeal nerve (CN IX).'},
+  {type:'tf',q:'The carotid body contains chemoreceptors sensitive to changes in pH and CO2.',ans:true,exp:'TRUE — Carotid body = oval cellular body behind carotid sinus, contains chemoreceptors (pH and CO2), supplied by glossopharyngeal nerve.'},
+  {type:'tf',q:'The External Carotid Artery gives no branches in its cervical course.',ans:false,exp:'FALSE — ECA gives 8 branches. It is the INTERNAL CAROTID ARTERY that gives NO branches in the cervical part.'},
+  {type:'tf',q:'The ascending pharyngeal artery arises from the medial aspect of the ECA.',ans:true,exp:'TRUE — Ascending pharyngeal arises from the MEDIAL aspect of ECA.'},
+  {type:'tf',q:'The facial artery ends by becoming the angular artery in the face.',ans:true,exp:'TRUE — Facial artery ends as the angular artery.'},
+  {type:'tf',q:'The superior laryngeal artery pierces the thyrohyoid membrane with the external laryngeal nerve.',ans:false,exp:'FALSE — Superior laryngeal artery pierces the thyrohyoid membrane with the INTERNAL laryngeal nerve. The EXTERNAL laryngeal nerve accompanies the superior thyroid artery superficially.'},
+  {type:'tf',q:'The lingual artery is divided by hyoglossus into 3 parts, with the 2nd part lying behind the muscle.',ans:true,exp:'TRUE — 1st part gives suprahyoid artery. 2nd part (behind hyoglossus) gives 2 dorsalis linguae. 3rd part gives sublingual + deep artery.'},
+  {type:'tf',q:'The IJV begins as a continuation of the sigmoid sinus at the jugular foramen.',ans:true,exp:'TRUE — IJV begins at jugular foramen as continuation of sigmoid sinus. Has superior bulb (upper end) and inferior bulb (lower end). Bicuspid valve above inferior bulb.'},
+  {type:'tf',q:'The inferior thyroid vein drains into the internal jugular vein.',ans:false,exp:'FALSE — Inferior thyroid vein drains into LEFT BRACHIOCEPHALIC vein.'},
+];
+const HN3_TRIANGLES_QUIZ = [
+  {type:'mcq',q:'All of the following are TRUE about the Posterior Triangle boundaries EXCEPT:',opts:['Bounded anteriorly by posterior border of sternomastoid','Bounded posteriorly by anterior border of trapezius','Bounded inferiorly by middle third of clavicle','Roof of the triangle consists of the prevertebral fascia'],ans:3,exp:'The ROOF of the posterior triangle is: skin, superficial fascia, platysma, investing layer of deep fascia. The FLOOR muscles are covered by prevertebral fascia.'},
+  {type:'mcq',q:'All of the following are found in the Posterior Triangle EXCEPT:',opts:['Inferior belly of omohyoid and deep cervical LNs','Trunks of brachial plexus (upper, middle, lower)','Spinal accessory nerve (CN XI) crossing the triangle','Phrenic nerve (root) in the triangle itself'],ans:3,exp:'Phrenic nerve is NOT content of the posterior triangle. Its root forms on scalenus medius then moves onto the anterior surface of scalenus anterior under prevertebral fascia.'},
+  {type:'mcq',q:'All of the following are TRUE about the Anterior Triangle of the Neck EXCEPT:',opts:['Bounded anteriorly by the midline of the neck','Bounded posteriorly by the anterior border of sternomastoid','Bounded superiorly by the base (lower margin) of body of mandible','The roof of the anterior triangle is the prevertebral fascia'],ans:3,exp:'The ROOF of the anterior triangle is: skin, superficial fascia, platysma, and investing layer of deep fascia. Prevertebral fascia is the floor of the posterior triangle.'},
+  {type:'mcq',q:'All of the following are TRUE about the Submental Triangle EXCEPT:',opts:['Unpaired (single) while all other triangles of the neck are paired','Base = body of hyoid bone; apex = symphysis menti','Floor = mylohyoid muscle and raphe','Contents include the submandibular gland'],ans:3,exp:'The submandibular gland is in the SUBMANDIBULAR (digastric) triangle. Submental contents: submental LNs, vessels, nerve to mylohyoid, beginning of anterior jugular vein.'},
+  {type:'mcq',q:'All of the following are contents of the Submandibular Triangle EXCEPT:',opts:['Submandibular lymph nodes and facial vessels','Submandibular gland','Nerve to mylohyoid and hypoglossal nerve (XII)','Parotid gland'],ans:3,exp:'Parotid gland is NOT in the submandibular triangle. Contents: submandibular LNs, facial vessels, submandibular gland, N. to mylohyoid, hypoglossal N.'},
+  {type:'mcq',q:'All of the following are TRUE about the Muscular Triangle EXCEPT:',opts:['Bounded anteriorly by the midline of the neck','Bounded above by the superior belly of omohyoid','Bounded below and posteriorly by the anterior border of sternomastoid','Floor contains the 3 carotid arteries (CCA, ICA, ECA) within the carotid sheath'],ans:3,exp:'The floor of the MUSCULAR triangle contains infrahyoid muscles. Under the floor: thyroid, larynx, trachea, esophagus, parathyroid, pharynx. Carotid arteries are in the CAROTID triangle.'},
+  {type:'mcq',q:'All of the following are contents of the Carotid Triangle EXCEPT:',opts:['The 3 carotid arteries (CCA, ICA, ECA with its branches)','IJV and 3 of its tributaries (common facial, lingual, superior thyroid)','Last 3 cranial nerves (10, 11, 12)','Inferior belly of omohyoid muscle'],ans:3,exp:'Inferior belly of omohyoid is in the posterior triangle boundary, NOT the carotid triangle. Carotid triangle: carotid arteries, IJV + tributaries, last 3 CNs, small nerves, deep cervical LNs, cervical sympathetic chain.'},
+  {type:'mcq',q:'All of the following are TRUE about midline structures of neck from above downward EXCEPT:',opts:['Mylohyoid muscle — hyoid bone — thyrohyoid membrane','Thyroid cartilage — cricothyroid ligament — cricoid cartilage','Cricothyroid ligament — trachea (1st ring) — thyroid gland (isthmus)','Thyroid gland isthmus lies in front of 5th, 6th, and 7th tracheal rings'],ans:3,exp:'Thyroid isthmus lies in front of 2nd, 3rd, and 4th tracheal rings.'},
+  {type:'tf',q:'The submental triangle is unpaired (single, in the midline).',ans:true,exp:'TRUE — Submental triangle is UNPAIRED while all other triangles are paired.'},
+  {type:'tf',q:'The posterior triangle is divided by the inferior belly of omohyoid into a larger supraclavicular (above) and smaller occipital (below) triangle.',ans:true,exp:'TRUE — Supraclavicular triangle (larger, above) and occipital triangle (smaller, below), divided by inferior belly of omohyoid.'},
+  {type:'tf',q:'The floor of the posterior triangle is covered by the investing layer of deep fascia.',ans:false,exp:'FALSE — Floor muscles are covered by PREVERTEBRAL fascia. The ROOF of the posterior triangle is covered by investing layer.'},
+  {type:'tf',q:'The spinal part of the accessory nerve (CN XI) is the motor nerve of the posterior triangle.',ans:true,exp:'TRUE — Spinal accessory nerve (CN XI) is the MOTOR nerve of the posterior triangle, supplying SCM and trapezius.'},
+];
+const HN3_THYROID_QUIZ = [
+  {type:'mcq',q:'All of the following are TRUE about the Thyroid Gland EXCEPT:',opts:['Very vascular organ in the neck mainly in the muscular triangle','Each lobe is pyramidal (pear-shaped) with apex reaching oblique line of thyroid cartilage','Pyramidal lobe projects upward from the isthmus usually to the RIGHT of midline','Isthmus lies in front of 2nd, 3rd, and 4th tracheal rings'],ans:2,exp:'Pyramidal lobe projects upward usually to the LEFT of midline. It is connected to hyoid bone by levator glandulae thyroidae.'},
+  {type:'mcq',q:'Regarding the capsule of the thyroid gland, all are TRUE EXCEPT:',opts:['True capsule is fibrous and directly encloses the gland','False capsule is fascial and derived from pretracheal fascia','Vessels of the gland run OUTSIDE the true fibrous capsule','Pretracheal fascia attaches gland to larynx and trachea so it moves with swallowing'],ans:2,exp:'Vessels of the gland run BETWEEN THE TWO CAPSULES (between true fibrous capsule and false fascial capsule).'},
+  {type:'mcq',q:'All of the following are TRUE about arterial supply of the thyroid EXCEPT:',opts:['Superior thyroid artery: branch of ECA; accompanied by external laryngeal nerve','Superior thyroid supplies upper 1/3 of lobe; inferior supplies lower 2/3','Inferior thyroid artery is related at its end to the external laryngeal nerve','Thyroidae ima artery is not always present and supplies the isthmus'],ans:2,exp:'Inferior thyroid artery is related at its end to the RECURRENT LARYNGEAL NERVE. The external laryngeal nerve accompanies the SUPERIOR thyroid artery.'},
+  {type:'mcq',q:'Regarding venous drainage of the thyroid gland, all are TRUE EXCEPT:',opts:['Superior thyroid vein drains into the internal jugular vein','Middle thyroid vein drains into the internal jugular vein','Inferior thyroid vein drains into the internal jugular vein','Inferior thyroid vein may drain by 2 veins into 2 brachiocephalic veins'],ans:2,exp:'Inferior thyroid vein drains into the LEFT BRACHIOCEPHALIC vein. Superior and middle thyroid veins drain into the IJV.'},
+  {type:'mcq',q:'All of the following are TRUE about the Parathyroid Glands EXCEPT:',opts:['Usually 4 in number: 2 superior, 2 inferior','Yellowish-brown, ovoid bodies about 6 mm in diameter','Located related to posterior border of each thyroid lobe within the fascial capsule','Supplied mainly by the superior thyroid artery'],ans:3,exp:'Parathyroid glands are supplied mainly by the INFERIOR thyroid artery (though both contribute).'},
+  {type:'mcq',q:'Regarding the Deep Part of the Submandibular Gland, all are TRUE EXCEPT:',opts:['Medially related to hyoglossus and styloglossus muscles','Laterally related to mylohyoid muscle','Superiorly related to lingual nerve and submandibular ganglion','Superiorly related to hypoglossal nerve (CN XII)'],ans:3,exp:'Hypoglossal nerve is the INFERIOR relation of the deep part. Relations: medially = hyoglossus & styloglossus; superiorly = lingual N. & submandibular ganglion; inferiorly = hypoglossal N.'},
+  {type:'mcq',q:'All of the following are TRUE about the Sublingual Gland EXCEPT:',opts:['Smallest of the 3 main salivary glands','Lies beneath the mucous membrane of the floor of the mouth near midline','Has several small ducts (8-20) opening on the sublingual fold','Inferior relation is the sublingual fossa at the mandible'],ans:3,exp:'The LATERAL relation is the sublingual fossa at the mandible. The INFERIOR relation is the MYLOHYOID MUSCLE.'},
+  {type:'mcq',q:'Regarding nerve supply of the Submandibular Gland, all are TRUE EXCEPT:',opts:['Sympathetic supply via plexus around facial and lingual arteries','Parasympathetic supply from the submandibular ganglion (post-ganglionic fibers)','Sensory supply from lingual nerve','Preganglionic parasympathetic fibers arise from the inferior salivary nucleus in the medulla'],ans:3,exp:'Preganglionic parasympathetic fibers arise from the SUPERIOR SALIVARY NUCLEUS (in pons). Pathway: superior salivary nucleus → facial N. → chorda tympani → lingual N. → submandibular ganglion.'},
+  {type:'mcq',q:'All of the following are TRUE about the Submandibular Ganglion EXCEPT:',opts:['Small parasympathetic ganglion hanging from the lingual nerve above mylohyoid','Medially related to hyoglossus muscle','Inferiorly related to the hypoglossal nerve (CN XII)','Post-ganglionic fibers go to submandibular and sublingual glands'],ans:2,exp:'The INFERIOR relation of the submandibular ganglion is the SUBMANDIBULAR DUCT (not hypoglossal nerve).'},
+  {type:'tf',q:'The pyramidal lobe of the thyroid gland projects upward usually to the left of midline.',ans:true,exp:'TRUE — Pyramidal lobe projects upward from isthmus, usually to LEFT of midline, connected to hyoid bone by levator glandulae thyroidae.'},
+  {type:'tf',q:'The isthmus of the thyroid lies in front of the 2nd, 3rd, and 4th tracheal rings.',ans:true,exp:'TRUE — Isthmus is in front of 2nd, 3rd & 4th tracheal rings.'},
+  {type:'tf',q:'The inferior thyroid artery is a branch of the external carotid artery.',ans:false,exp:'FALSE — Inferior thyroid artery is a branch of THYROCERVICAL TRUNK (1st part of subclavian). The SUPERIOR thyroid artery is the ECA branch.'},
+  {type:'tf',q:'The thyroidae ima artery is always present and supplies the isthmus.',ans:false,exp:'FALSE — Thyroidae ima is NOT ALWAYS PRESENT. When present: branch of arch of aorta, single artery, supplies the isthmus.'},
+  {type:'tf',q:'Parathyroid glands are usually 4 in number and supplied mainly by the inferior thyroid artery.',ans:true,exp:'TRUE — 4 parathyroid glands; supplied mainly by INFERIOR thyroid artery.'},
+  {type:'tf',q:'The sublingual gland is the smallest of the 3 main salivary glands.',ans:true,exp:'TRUE — Sublingual gland = smallest of 3 salivary glands; lies beneath mucous membrane of floor of mouth; has 8-20 small ducts.'},
+  {type:'tf',q:'The submandibular duct arises from the superficial part of the submandibular gland.',ans:false,exp:'FALSE — The submandibular duct arises from the DEEP PART of the gland.'},
+  {type:'tf',q:'The submandibular ganglion is a parasympathetic ganglion hanging from the lingual nerve.',ans:true,exp:'TRUE — Submandibular ganglion: small PARASYMPATHETIC ganglion hanging from lingual nerve above mylohyoid.'},
+  {type:'tf',q:'Chorda tympani carries taste fibers from anterior 2/3 of tongue and preganglionic parasympathetic fibers.',ans:true,exp:'TRUE — Chorda tympani carries: (1) taste fibers from anterior 2/3 of tongue, and (2) preganglionic parasympathetic fibers to SM and SL glands.'},
+];
+
+/* ══════════════════════════════════════════════════
+   HEAD & NECK P4 — QUIZ DATA
+══════════════════════════════════════════════════ */
+const HN4_NASAL_QUIZ = [
+  {type:'mcq',q:'All of the following drain into the MIDDLE MEATUS EXCEPT:',opts:['Anterior ethmoidal air sinus','Frontal sinus','Maxillary sinus','Posterior ethmoidal air sinus'],ans:3,exp:'The POSTERIOR ETHMOIDAL AIR SINUS drains into the SUPERIOR MEATUS. Middle meatus receives: middle ethmoidal sinus (bulla ethmoidalis), anterior ethmoidal sinus, frontal sinus, and maxillary sinus.'},
+  {type:'mcq',q:'Regarding nasal meatuses, all are TRUE EXCEPT:',opts:['Inferior meatus receives opening of the nasolacrimal duct','Superior meatus receives posterior ethmoidal air sinus','Middle meatus receives frontal sinus via the hiatus semilunaris','Sphenoidal air sinus drains into sphenoethmoidal recess which is at the level of the inferior meatus'],ans:3,exp:'The sphenoethmoidal recess is ABOVE THE SUPERIOR CONCHA (below the roof of the skull), NOT at the inferior meatus.'},
+  {type:'mcq',q:'All of the following are TRUE about the nasal septum EXCEPT:',opts:['Anteriorly formed by septal cartilage','Postero-superior formed by perpendicular plate of ethmoid','Postero-inferior formed by vomer bone','The septal cartilage forms the postero-superior part of the nasal septum'],ans:3,exp:'POSTERO-SUPERIOR part = PERPENDICULAR PLATE OF ETHMOID. The SEPTAL CARTILAGE forms the ANTERIOR part.'},
+  {type:'mcq',q:"Regarding arteries anastomosing in Kiesselbach's plexus, all are TRUE EXCEPT:",opts:['Anterior ethmoidal artery (from ophthalmic artery)','Sphenopalatine artery (from maxillary artery)','Greater palatine artery (from maxillary artery)',"Posterior ethmoidal artery does NOT contribute to Kiesselbach's plexus"],ans:3,exp:"The classic 4 arteries of Kiesselbach's plexus: anterior ethmoidal, sphenopalatine, greater palatine, and septal branch of superior labial artery (from facial artery). All 4 contribute."},
+  {type:'mcq',q:'Regarding blood supply of the nasal cavity, all are TRUE EXCEPT:',opts:['Anterior and posterior ethmoidal arteries are branches of ophthalmic artery','Greater palatine and sphenopalatine are branches of maxillary artery','Septal branch of superior labial artery is from facial artery','Venous drainage does NOT correspond to the arteries'],ans:3,exp:'Venous drainage of nasal cavity CORRESPONDS to the arteries. Statement D is therefore FALSE.'},
+  {type:'mcq',q:'All of the following are functions of paranasal sinuses EXCEPT:',opts:['Decrease skull weight','Give resonance to voice','Warm and humidify air','Produce mucus exclusively for nasal drainage'],ans:3,exp:'The 4 standard functions are: decrease skull weight, give resonance to voice, warm and humidify air, protect brain against temperature changes.'},
+  {type:'mcq',q:'All of the following are TRUE about lateral wall nerve supply of the nasal cavity EXCEPT:',opts:['Special sensation (smell) = olfactory nerves','General sensation: anterior ethmoidal nerve (branch of ophthalmic division V1)','General sensation: greater palatine nerve (branch of maxillary V2)','General sensation: lingual nerve (branch of mandibular V3)'],ans:3,exp:'The lingual nerve (V3) supplies general sensation to the TONGUE, not the lateral wall of the nasal cavity.'},
+  {type:'mcq',q:'All of the following are TRUE about the medial wall (nasal septum) nerve supply EXCEPT:',opts:['Special sensation (smell) = olfactory nerve','General sensation: anterior ethmoidal nerve','General sensation: long sphenopalatine nerve','General sensation: short sphenopalatine nerve provides most of the septal supply'],ans:3,exp:'The LONG SPHENOPALATINE nerve supplies most of the MEDIAL WALL (septum). The short sphenopalatine supplies the LATERAL WALL.'},
+  {type:'mcq',q:'All of the following are TRUE about nasal cavity boundaries EXCEPT:',opts:['Floor = hard palate','Roof formed from front to back: nasal bone, cribriform plate of ethmoid, sphenoid body','Lateral wall has 3 bony elevations (conchae) and 3 depressions (meatuses)','Inferior concha is part of the ethmoid bone'],ans:3,exp:'INFERIOR CONCHA is a SEPARATE BONE (not part of ethmoid). SUPERIOR and MIDDLE conchae are parts of the ETHMOID BONE.'},
+  {type:'tf',q:'The inferior meatus receives the opening of the nasolacrimal duct.',ans:true,exp:'TRUE — Inferior meatus receives the NASOLACRIMAL DUCT opening.'},
+  {type:'tf',q:'The superior meatus receives the posterior ethmoidal air sinus.',ans:true,exp:'TRUE — Superior meatus receives POSTERIOR ETHMOIDAL AIR SINUS.'},
+  {type:'tf',q:'The sphenoidal air sinus drains into the superior meatus.',ans:false,exp:'FALSE — Sphenoidal sinus drains into the SPHENOETHMOIDAL RECESS (above superior concha, below roof of skull).'},
+  {type:'tf',q:'The middle meatus contains the bulla ethmoidalis and hiatus semilunaris.',ans:true,exp:'TRUE — Middle meatus contains: BULLA ETHMOIDALIS (middle ethmoidal sinus) and HIATUS SEMILUNARIS (groove below bulla receiving anterior ethmoidal, frontal, and maxillary sinuses).'},
+  {type:"tf",q:"Kiesselbach's plexus is located on the LATERAL wall of the nasal cavity.",ans:false,exp:"FALSE — Kiesselbach's plexus (Little's area) is on the ANTERIOR part of the NASAL SEPTUM (MEDIAL wall)."},
+  {type:'tf',q:'The roof of the nasal cavity is formed from front to back by: nasal bone, cribriform plate of ethmoid, then sphenoid body.',ans:true,exp:'TRUE — Roof (ant. to post.): nasal bone → cribriform plate of ethmoid → sphenoid body.'},
+  {type:'tf',q:'The vomer forms the postero-inferior part of the nasal septum.',ans:true,exp:'TRUE — Nasal septum: anteriorly = septal cartilage; postero-superior = perpendicular plate of ethmoid; POSTERO-INFERIOR = VOMER bone.'},
+  {type:'tf',q:'The inferior concha is part of the ethmoid bone.',ans:false,exp:'FALSE — Inferior concha is a SEPARATE BONE. Superior and middle conchae are parts of the ETHMOID bone.'},
+  {type:'tf',q:'Lymph from the anterior part of the nasal cavity drains to submandibular LN.',ans:true,exp:'TRUE — Anterior part nasal cavity → SUBMANDIBULAR LN. Posterior part → retropharyngeal + upper deep cervical LN.'},
+];
+const HN4_PHARYNX_QUIZ = [
+  {type:'mcq',q:'All of the following are TRUE about Pharyngeal muscles EXCEPT:',opts:['Transverse (circular) muscles: 3 constrictors — superior, middle, and inferior','Longitudinal muscles: stylo-pharyngeus, palato-pharyngeus, salpingo-pharyngeus','All pharyngeal muscles are supplied by the pharyngeal plexus of nerves','Stylo-pharyngeus is supplied by the pharyngeal plexus (NOT glossopharyngeal nerve)'],ans:3,exp:'ALL pharyngeal muscles are supplied by the pharyngeal plexus EXCEPT STYLO-PHARYNGEUS, which is supplied by the GLOSSOPHARYNGEAL NERVE (CN IX).'},
+  {type:'mcq',q:'All of the following form the Pharyngeal Plexus of Nerves EXCEPT:',opts:['Pharyngeal branches of glossopharyngeal nerve (CN IX) — sensory','Pharyngeal branches of vagus nerve (CN X) — motor and parasympathetic','Superior cervical sympathetic ganglion — sympathetic','Pharyngeal branches of facial nerve (CN VII)'],ans:3,exp:'Facial nerve (CN VII) does NOT contribute to the pharyngeal plexus.'},
+  {type:'mcq',q:'Regarding arterial supply of the pharynx, all are TRUE EXCEPT:',opts:['Ascending pharyngeal branch of ECA','Ascending palatine and tonsillar branches of facial artery','Pharyngeal branches of superior and inferior thyroid arteries','Pharyngeal branches of the lingual artery'],ans:3,exp:'The lingual artery does NOT supply the pharynx.'},
+  {type:'mcq',q:'All of the following are TRUE about the Oral Cavity EXCEPT:',opts:['The oral cavity is divided into vestibule and oral cavity proper','Vestibule = space between gums internally and lips/cheeks externally','Oral cavity proper: roof = palate (hard and soft); floor = tongue; sides = teeth','The vestibule is also called the buccal cavity'],ans:3,exp:'The ORAL CAVITY PROPER is called the BUCCAL CAVITY. The VESTIBULE is called the LABIAL CAVITY.'},
+  {type:'mcq',q:'Regarding the Soft Palate, all are TRUE EXCEPT:',opts:['Formed by palatine aponeurosis (aponeurosis of tensor palati)','Palatine muscles: levator palati, tensor palati, palatoglossus, palato-pharyngeus','Motor supply: all muscles supplied by palatine plexus (accessory N. through vagus) except tensor palati','Tensor palati is supplied by the facial nerve (CN VII)'],ans:3,exp:'Tensor palati is supplied by the MANDIBULAR NERVE (V3) via the nerve to medial pterygoid. NOT the facial nerve.'},
+  {type:'mcq',q:'All of the following are TRUE about sensory supply of the palate EXCEPT:',opts:['Greater palatine nerve — sensory to palate','Lesser palatine nerve — sensory to palate','Long sphenopalatine nerve — sensory to palate','Lingual nerve (V3) — sensory to palate'],ans:3,exp:'The lingual nerve supplies the TONGUE, NOT the palate. Palate sensory supply = greater palatine, lesser palatine, and long sphenopalatine nerves.'},
+  {type:'mcq',q:'All of the following are features of the Nasopharynx EXCEPT:',opts:['Nasopharyngeal tonsil on the posterior wall','Opening of Eustachian tube at level of inferior concha','Tubal elevation (upper and posterior lips of Eustachian opening)','Palatine tonsils lie between palatoglossal and palatopharyngeal folds'],ans:3,exp:'The PALATINE TONSILS are found in the OROPHARYNX (not nasopharynx).'},
+  {type:'mcq',q:"All of the following are TRUE about Waldeyer's ring EXCEPT:",opts:["Formed by lymphoid tissue around entrance to pharynx","Contains: nasopharyngeal tonsil, palatine tonsils, lingual tonsil","Tubal tonsils are also part of Waldeyer's ring","Waldeyer's ring contains only 3 tonsils total"],ans:3,exp:"Waldeyer's ring contains MORE than 3 tonsils: nasopharyngeal tonsil (1) + 2 palatine tonsils + lingual tonsil + 2 tubal tonsils."},
+  {type:'tf',q:'The pharynx is a funnel-shaped muscular tube that starts from the base of skull and ends at C6 vertebra.',ans:true,exp:'TRUE — Pharynx: funnel-shaped muscular tube; starts from BASE OF SKULL; ends at C6 vertebra where it becomes the ESOPHAGUS.'},
+  {type:'tf',q:'All pharyngeal muscles are supplied by the pharyngeal plexus EXCEPT stylo-pharyngeus which is supplied by the facial nerve.',ans:false,exp:'FALSE — Stylo-pharyngeus is supplied by the GLOSSOPHARYNGEAL NERVE (CN IX), NOT the facial nerve.'},
+  {type:'tf',q:'The pharyngeal plexus of nerves lies on the outer surface of the middle constrictor.',ans:true,exp:'TRUE — The pharyngeal plexus lies on the OUTER SURFACE OF THE MIDDLE CONSTRICTOR.'},
+  {type:'tf',q:'The pharynx has 3 transverse (circular) and 3 longitudinal muscles.',ans:true,exp:'TRUE — TRANSVERSE = 3 constrictors. LONGITUDINAL = 3 pharyngeus muscles.'},
+  {type:'tf',q:'The hard palate is formed entirely by the palatine processes of maxilla.',ans:false,exp:'FALSE — Hard palate: ANTERIOR 3/4 = palatine processes of MAXILLA. POSTERIOR 1/4 = horizontal plate of PALATINE BONE.'},
+  {type:'tf',q:'Tensor palati muscle is supplied by the palatine plexus (accessory nerve through vagus).',ans:false,exp:'FALSE — TENSOR PALATI is supplied by the MANDIBULAR NERVE (V3) via nerve to medial pterygoid.'},
+  {type:'tf',q:'The palatine aponeurosis is the aponeurosis of the tensor palati muscle attaching to the posterior free border of the hard palate.',ans:true,exp:'TRUE — Palatine aponeurosis = aponeurosis of TENSOR PALATI. Attaches to posterior free border of hard palate.'},
+  {type:'tf',q:'The nasopharynx contains the opening of the Eustachian tube at the level of the middle concha.',ans:false,exp:'FALSE — The Eustachian tube opens at the level of the INFERIOR CONCHA in the nasopharynx.'},
+  {type:'tf',q:"Palatine tonsils lie between the palatoglossal fold anteriorly and the palatopharyngeal fold posteriorly.",ans:true,exp:'TRUE — Palatine tonsils are in the OROPHARYNX, between palatoglossal fold (anterior pillar) and palatopharyngeal fold (posterior pillar).'},
+  {type:'tf',q:"Waldeyer's ring is formed by lymphoid tissue around the entrance to the pharynx.",ans:true,exp:"TRUE — Waldeyer's ring = ring of lymphoid tissue: nasopharyngeal tonsil + 2 palatine tonsils + lingual tonsil + 2 tubal tonsils."},
+  {type:'tf',q:'The salpingo-pharyngeal fold in the nasopharynx is caused by the levator palati muscle.',ans:false,exp:'FALSE — The SALPINGO-PHARYNGEAL FOLD is caused by the SALPINGO-PHARYNGEUS MUSCLE. The LEVATOR PALATI is a palate muscle.'},
+];
+const HN4_TONGUE_QUIZ = [
+  {type:'mcq',q:'Regarding the Tongue, all are TRUE EXCEPT:',opts:['It is a muscular organ formed by muscles and covered by mucosa','Dorsal surface divided by sulcus terminalis into anterior 2/3 and posterior 1/3','Apex of V-shape is directed posteriorly into foramen caecum','Anterior 2/3 is also called the pharyngeal part and lies in the oropharynx'],ans:3,exp:'Anterior 2/3 = PALATINE (BUCCAL) PART, lies in ORAL CAVITY PROPER. POSTERIOR 1/3 = PHARYNGEAL PART, lies in OROPHARYNX.'},
+  {type:'mcq',q:'Regarding sensory supply of the Tongue, all are TRUE EXCEPT:',opts:['Anterior 2/3 — special sensation (taste): by chorda tympani (facial nerve)','Anterior 2/3 — general sensation: by lingual nerve (branch of mandibular V3)','Posterior 1/3 — ALL sensations: by glossopharyngeal nerve (CN IX)','Posterior 1/3 — special sensation (taste): by chorda tympani (facial nerve)'],ans:3,exp:'POSTERIOR 1/3 sensations (general AND taste) are ALL supplied by GLOSSOPHARYNGEAL NERVE (CN IX). Chorda tympani only supplies ANTERIOR 2/3 taste.'},
+  {type:'mcq',q:'Regarding motor supply of tongue muscles, all are TRUE EXCEPT:',opts:['ALL tongue muscles supplied by hypoglossal nerve (CN XII)','Palatoglossus is the exception — supplied by palatine plexus (cranial accessory N. through vagus)','Intrinsic muscles include vertical, transverse, superior and inferior longitudinal fibers','All intrinsic muscles change the POSITION of tongue'],ans:3,exp:'Intrinsic muscles change the SHAPE of the tongue. EXTRINSIC muscles change the POSITION.'},
+  {type:'mcq',q:'All of the following are TRUE about extrinsic tongue muscles EXCEPT:',opts:['Genioglossus: origin = superior genial tubercle; action = protrusion','Hyoglossus: origin = hyoid bone; action = depression of tongue','Styloglossus: origin = styloid process; action = retraction and elevation','Palatoglossus: origin = palatine aponeurosis; supplied by hypoglossal nerve'],ans:3,exp:'Palatoglossus is supplied by the PALATINE PLEXUS (cranial accessory N. through vagus), NOT hypoglossal nerve.'},
+  {type:'mcq',q:'All of the following are TRUE about lymph drainage of the Tongue EXCEPT:',opts:['Anterior 2/3 TIP drains to submental LN','Anterior 2/3 SIDES drain to submandibular LN then upper deep cervical LN','Posterior 1/3 drains all into upper deep cervical LN','Anterior 2/3 tip drains to submandibular LN (not submental)'],ans:3,exp:'The TIP of the tongue drains to SUBMENTAL LN. Statement D says tip drains to submandibular — this is WRONG.'},
+  {type:'mcq',q:'All of the following are TRUE about blood supply of tongue EXCEPT:',opts:['Arterial supply = lingual artery (branch of ECA)','Venous drainage = lingual vein (into IJV)','Lingual artery is accompanied by hypoglossal nerve on hyoglossus','Lingual artery is a direct branch of the common carotid artery'],ans:3,exp:'Lingual artery is a branch of the EXTERNAL CAROTID ARTERY (ECA), NOT the common carotid artery.'},
+  {type:'mcq',q:'Regarding papillae of the tongue, all are TRUE EXCEPT:',opts:['Anterior 2/3 of tongue dorsum has filiform, fungiform, and vallate papillae','Posterior 1/3 has NO papillae','Vallate (circumvallate) papillae are arranged in V-shape in front of sulcus terminalis','Filiform papillae are the largest and are responsible for taste'],ans:3,exp:'FILIFORM papillae are the MOST NUMEROUS but do NOT have taste buds — they are responsible for TOUCH/texture. VALLATE are the LARGEST.'},
+  {type:'tf',q:'The anterior 2/3 of tongue develops from the 1st pharyngeal arch.',ans:true,exp:'TRUE — Anterior 2/3 = from 1ST PHARYNGEAL ARCH. Posterior 1/3 = from 3RD pharyngeal arch.'},
+  {type:'tf',q:'Taste sensation in anterior 2/3 of tongue is supplied by the lingual nerve.',ans:false,exp:'FALSE — Taste of anterior 2/3 = CHORDA TYMPANI (branch of FACIAL NERVE). The LINGUAL NERVE (V3) supplies GENERAL sensation only.'},
+  {type:'tf',q:'Posterior 1/3 of tongue is supplied by glossopharyngeal nerve for ALL sensations.',ans:true,exp:'TRUE — Posterior 1/3: ALL sensations (general + taste) = GLOSSOPHARYNGEAL NERVE (CN IX).'},
+  {type:'tf',q:'Palatoglossus is the only tongue muscle NOT supplied by the hypoglossal nerve.',ans:true,exp:'TRUE — ALL tongue muscles = hypoglossal nerve (CN XII) EXCEPT PALATOGLOSSUS, which is supplied by the PALATINE PLEXUS (cranial accessory N. through vagus CN X).'},
+  {type:'tf',q:'The tip of the anterior 2/3 of tongue drains lymph to the submandibular lymph nodes.',ans:false,exp:'FALSE — The TIP drains to SUBMENTAL LN. The SIDES of anterior 2/3 drain to submandibular LN.'},
+  {type:'tf',q:'The dorsal surface of the tongue is divided into anterior 2/3 and posterior 1/3 by the sulcus terminalis (V-shaped groove).',ans:true,exp:'TRUE — Sulcus terminalis = V-shaped groove. Apex of V directed posteriorly into FORAMEN CAECUM.'},
+  {type:'tf',q:'Intrinsic tongue muscles change the position of the tongue.',ans:false,exp:'FALSE — INTRINSIC muscles change the SHAPE of the tongue. EXTRINSIC muscles change the POSITION.'},
+  {type:'tf',q:'The posterior 1/3 of tongue contains lingual tonsils.',ans:true,exp:'TRUE — Posterior 1/3 (pharyngeal part) contains LINGUAL TONSILS. Anterior 2/3 has NO lingual tonsils.'},
+  {type:'tf',q:'Blood supply to the tongue is from the lingual artery (branch of ECA) and venous drainage is via lingual vein to the IJV.',ans:true,exp:'TRUE — Lingual artery = branch of ECA. Lingual vein drains into IJV. Lingual artery accompanies hypoglossal nerve on hyoglossus.'},
+  {type:'tf',q:'The ventral (lower) surface of the tongue shows the frenulum linguae, deep lingual vein, and fimbriated fold.',ans:true,exp:'TRUE — Ventral surface shows: FRENULUM LINGUAE, DEEP LINGUAL VEIN (on each side of midline), and FIMBRIATED FOLD (lateral to the vein).'},
+];
+
+/* ══════════════════════════════════════════════════
+   FLASH CARD LOGIC
+══════════════════════════════════════════════════ */
+let fcSheet = 'intro';
+let fcFilter = 'all';
+let fcDeck = [];
+let fcIndex = 0;
+let fcFlipped = false;
+
+const INTRO_CARDS = [...INTRO_SKIN, ...INTRO_MUSCLE, ...INTRO_BONE, ...INTRO_JOINT];
+const HN_CARDS = [...HN_SCALP, ...HN_FACE, ...HN_PAROTID, ...HN_FACIALN, ...HN_MAST, ...HN_MAXA, ...HN_V3, ...HN_DEV];
+const HN3_CARDS = [...HN3_MUS, ...HN3_FAS, ...HN3_ART, ...HN3_TRI, ...HN3_THY, ...HN3_SAL, ...HN3_REV];
+const HN4_CARDS = [...HN4_NASAL, ...HN4_PHAR, ...HN4_ORAL, ...HN4_TON, ...HN4_REV];
+
+const FC_FILTERS = {
+  intro: [
+    {key:'all', label:'All (47)'},
+    {key:'skin', label:'🧴 Skin (12)'},
+    {key:'muscle', label:'💪 Muscle (6)'},
+    {key:'bone', label:'🦴 Bones (19)'},
+    {key:'joint', label:'🔩 Joints (10)'},
+  ],
+  hn: [
+    {key:'all', label:'All (120)'},
+    {key:'scalp', label:'🧠 Scalp (22)'},
+    {key:'face', label:'👤 Face (15)'},
+    {key:'parotid', label:'🦷 Parotid (17)'},
+    {key:'facialN', label:'⚡ Facial N (11)'},
+    {key:'mast', label:'💪 Mastication (20)'},
+    {key:'maxA', label:'🩸 Max Artery (15)'},
+    {key:'v3', label:'🔬 V3 (12)'},
+    {key:'dev', label:'🌱 Development (8)'},
+  ],
+  hn3: [
+    {key:'all', label:'All (130)'},
+    {key:'neck_mus', label:'💪 Muscles (29)'},
+    {key:'neck_fas', label:'🏗 Fascia & Veins (14)'},
+    {key:'neck_art', label:'🩸 Arteries (21)'},
+    {key:'neck_tri', label:'📐 Triangles (12)'},
+    {key:'neck_thy', label:'🦋 Thyroid & PTH (12)'},
+    {key:'neck_sal', label:'🫧 Salivary Glands (13)'},
+    {key:'neck_rev', label:'⚡ Exam Traps (29)'},
+  ],
+  hn4: [
+    {key:'all', label:'All (60)'},
+    {key:'nasal', label:'👃 Nasal Cavity (18)'},
+    {key:'pharynx', label:'🫁 Pharynx (10)'},
+    {key:'oral', label:'👄 Oral Cavity & Palate (9)'},
+    {key:'tongue', label:'👅 Tongue (17)'},
+    {key:'npt_rev', label:'⚡ Exam Traps (4)'},
+  ]
+};
+
+const CAT_TAGS = {
+  skin:'🧴 SKIN', muscle:'💪 MUSCLE', bone:'🦴 BONES', joint:'🔩 SYNOVIAL JOINTS',
+  scalp:'🧠 SCALP', face:'👤 FACE', parotid:'🦷 PAROTID GLAND',
+  facialN:'⚡ FACIAL NERVE', mast:'💪 MASTICATION', maxA:'🩸 MAX ARTERY',
+  v3:'🔬 MANDIBULAR V3', dev:'🌱 DEVELOPMENT',
+  neck_mus:'💪 NECK MUSCLES', neck_fas:'🏗 FASCIA & VEINS',
+  neck_art:'🩸 NECK ARTERIES', neck_tri:'📐 TRIANGLES',
+  neck_thy:'🦋 THYROID & PTH', neck_sal:'🫧 SALIVARY GLANDS', neck_rev:'⚡ EXAM TRAPS',
+  nasal:'👃 NASAL CAVITY', pharynx:'🫁 PHARYNX', oral:'👄 ORAL CAVITY & PALATE',
+  tongue:'👅 TONGUE', npt_rev:'⚡ EXAM TRAPS'
+};
+
+function renderFCFilters() {
+  const row = document.getElementById('fcFilterRow');
+  const filters = FC_FILTERS[fcSheet];
+  row.innerHTML = filters.map((f,i) => `<button class="filter-btn${i===0?' active':''}" onclick="setFCFilter('${f.key}')">${f.label}</button>`).join('');
+}
+
+function setFCSheet(s) {
+  fcSheet = s;
+  fcFilter = 'all';
+  document.getElementById('fcSheetIntro').classList.toggle('active', s==='intro');
+  document.getElementById('fcSheetHN').classList.toggle('active', s==='hn');
+  document.getElementById('fcSheetHN3').classList.toggle('active', s==='hn3');
+  document.getElementById('fcSheetHN4').classList.toggle('active', s==='hn4');
+  renderFCFilters();
+  buildDeck();
+}
+
+function buildDeck() {
+  const source = fcSheet === 'intro' ? INTRO_CARDS : fcSheet === 'hn' ? HN_CARDS : fcSheet === 'hn3' ? HN3_CARDS : HN4_CARDS;
+  fcDeck = fcFilter === 'all' ? [...source] : source.filter(c => c.cat === fcFilter);
+  fcIndex = 0; fcFlipped = false;
+  renderCard();
+}
+
+function renderCard() {
+  const card = fcDeck[fcIndex];
+  document.getElementById('fcCurrent').textContent = fcIndex + 1;
+  document.getElementById('fcTotal').textContent = fcDeck.length;
+  document.getElementById('fcTag').textContent = CAT_TAGS[card.cat] || card.cat.toUpperCase();
+  document.getElementById('fcQuestion').textContent = card.q;
+  document.getElementById('fcAnswer').textContent = card.a;
+  document.getElementById('fcCard').classList.remove('flipped');
+  fcFlipped = false;
+}
+
+function flipCard() {
+  fcFlipped = !fcFlipped;
+  document.getElementById('fcCard').classList.toggle('flipped', fcFlipped);
+}
+function nextCard() { fcIndex = (fcIndex + 1) % fcDeck.length; renderCard(); }
+function prevCard() { fcIndex = (fcIndex - 1 + fcDeck.length) % fcDeck.length; renderCard(); }
+function shuffleCards() {
+  for (let i = fcDeck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [fcDeck[i], fcDeck[j]] = [fcDeck[j], fcDeck[i]];
+  }
+  fcIndex = 0; renderCard();
+}
+function resetCards() { buildDeck(); }
+function setFCFilter(f) {
+  fcFilter = f;
+  document.querySelectorAll('#fcFilterRow .filter-btn').forEach(b => b.classList.remove('active'));
+  const filters = FC_FILTERS[fcSheet];
+  const idx = filters.findIndex(x => x.key === f);
+  if (idx >= 0) document.querySelectorAll('#fcFilterRow .filter-btn')[idx].classList.add('active');
+  buildDeck();
+}
+
+/* ══════════════════════════════════════════════════
+   QUIZ LOGIC
+══════════════════════════════════════════════════ */
+let quizSheet = 'intro';
+let quizDeck = [];
+let quizIndex = 0;
+let quizCorrect = 0;
+let quizAnswered = false;
+
+const QUIZ_TOPICS = {
+  intro: [
+    {key:'skin', label:'🧴 The Skin', count:'20 questions — MCQ & T/F', data: INTRO_SKIN_QUIZ},
+    {key:'muscle', label:'💪 Muscles', count:'6 questions — MCQ & T/F', data: INTRO_MUSCLE_QUIZ},
+    {key:'bone', label:'🦴 Bones (by Shape)', count:'12 questions — MCQ & T/F', data: INTRO_BONE_QUIZ},
+    {key:'joint', label:'🔩 Synovial Joints', count:'7 questions — MCQ & T/F', data: INTRO_JOINT_QUIZ},
+    {key:'all', label:'⚡ All Introduction', count:'All 45 questions combined & shuffled', data: null, all:true},
+  ],
+  hn: [
+    {key:'scalp', label:'🧠 Scalp Region', count:'20 questions — MCQ & T/F', data: HN_SCALP_QUIZ},
+    {key:'face', label:'👤 Face Region', count:'5 questions — MCQ & T/F', data: HN_FACE_QUIZ},
+    {key:'parotid', label:'🦷 Parotid Gland', count:'12 questions — MCQ & T/F', data: HN_PAROTID_QUIZ},
+    {key:'facialN', label:'⚡ Facial Nerve (CN VII)', count:'8 questions — MCQ & T/F', data: HN_FACIALN_QUIZ},
+    {key:'mast', label:'💪 Muscles of Mastication', count:'11 questions — MCQ & T/F', data: HN_MAST_QUIZ},
+    {key:'maxA', label:'🩸 Maxillary Artery', count:'10 questions — MCQ & T/F', data: HN_MAXA_QUIZ},
+    {key:'v3', label:'🔬 Mandibular Nerve V3', count:'9 questions — MCQ & T/F', data: HN_V3_QUIZ},
+    {key:'dev', label:'🌱 Development of Face', count:'5 questions — MCQ & T/F', data: HN_DEV_QUIZ},
+    {key:'all', label:'⚡ All Head & Neck', count:'All 80 questions combined & shuffled', data: null, all:true},
+  ],
+  hn3: [
+    {key:'muscles', label:'💪 Neck Muscles', count:'MCQ & T/F', data: HN3_MUSCLES_QUIZ},
+    {key:'vessels', label:'🩸 Vessels & Fascia', count:'MCQ & T/F', data: HN3_VESSELS_QUIZ},
+    {key:'triangles', label:'📐 Triangles', count:'MCQ & T/F', data: HN3_TRIANGLES_QUIZ},
+    {key:'thyroid', label:'🦋 Thyroid & Salivary', count:'MCQ & T/F', data: HN3_THYROID_QUIZ},
+    {key:'all', label:'⚡ All Neck P3', count:'All 95 questions combined & shuffled', data: null, all:true},
+  ],
+  hn4: [
+    {key:'nasal', label:'👃 Nasal Cavity', count:'MCQ & T/F', data: HN4_NASAL_QUIZ},
+    {key:'pharynx', label:'🫁 Pharynx & Oral', count:'MCQ & T/F', data: HN4_PHARYNX_QUIZ},
+    {key:'tongue', label:'👅 Tongue', count:'MCQ & T/F', data: HN4_TONGUE_QUIZ},
+    {key:'all', label:'⚡ All Neck P4', count:'All 60 questions combined & shuffled', data: null, all:true},
+  ]
+};
+
+function setQuizSheet(s) {
+  quizSheet = s;
+  document.getElementById('qSheetIntro').classList.toggle('active', s==='intro');
+  document.getElementById('qSheetHN').classList.toggle('active', s==='hn');
+  document.getElementById('qSheetHN3').classList.toggle('active', s==='hn3');
+  document.getElementById('qSheetHN4').classList.toggle('active', s==='hn4');
+  renderQuizTopics();
+}
+
+function renderQuizTopics() {
+  const topics = QUIZ_TOPICS[quizSheet] || QUIZ_TOPICS['intro'];
+  const container = document.getElementById('quizTopicButtons');
+  container.innerHTML = topics.map(t =>
+    `<button class="start-opt-btn${t.all?' start-opt-all':''}" onclick="startQuiz('${t.key}')">
+      <span class="sot">${t.label}</span>
+      <span class="son">${t.count}</span>
+    </button>`
+  ).join('');
+}
+
+function startQuiz(key) {
+  const topics = QUIZ_TOPICS[quizSheet] || QUIZ_TOPICS['intro'];
+  if (key === 'all') {
+    const allData = topics.filter(t => !t.all).flatMap(t => t.data);
+    quizDeck = [...allData];
+  } else {
+    const topic = topics.find(t => t.key === key);
+    quizDeck = [...topic.data];
+  }
+  for (let i = quizDeck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [quizDeck[i], quizDeck[j]] = [quizDeck[j], quizDeck[i]];
+  }
+  quizIndex = 0; quizCorrect = 0; quizAnswered = false;
+  document.getElementById('quizStart').style.display = 'none';
+  document.getElementById('quizResult').classList.remove('visible');
+  document.getElementById('quizActive').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quizDeck[quizIndex];
+  quizAnswered = false;
+  document.getElementById('qNum').textContent = `Q${quizIndex + 1} / ${quizDeck.length}`;
+  document.getElementById('qScore').textContent = `✓ ${quizCorrect}`;
+  document.getElementById('qProgress').style.width = `${(quizIndex / quizDeck.length) * 100}%`;
+  const badge = document.getElementById('qTypeBadge');
+  badge.className = 'quiz-type-badge ' + q.type;
+  badge.textContent = q.type === 'tf' ? 'TRUE / FALSE' : 'MCQ';
+  document.getElementById('qQuestion').textContent = q.q;
+  document.getElementById('qExplanation').classList.remove('visible');
+  document.getElementById('qNextBtn').classList.remove('visible');
+  const optsEl = document.getElementById('qOptions');
+  optsEl.innerHTML = '';
+  if (q.type === 'tf') {
+    const div = document.createElement('div');
+    div.className = 'tf-buttons';
+    const tBtn = document.createElement('button');
+    tBtn.className = 'tf-btn true-btn'; tBtn.textContent = '✓ TRUE';
+    const fBtn = document.createElement('button');
+    fBtn.className = 'tf-btn false-btn'; fBtn.textContent = '✗ FALSE';
+    tBtn.onclick = () => answerTF(true, tBtn, fBtn, q);
+    fBtn.onclick = () => answerTF(false, tBtn, fBtn, q);
+    div.appendChild(tBtn); div.appendChild(fBtn);
+    optsEl.appendChild(div);
+  } else {
+    const labels = ['A','B','C','D'];
+    const btns = [];
+    q.opts.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-opt';
+      btn.innerHTML = `<span class="opt-label">${labels[i]}</span><span>${opt}</span>`;
+      btn.onclick = () => answerMCQ(i, btns, q);
+      optsEl.appendChild(btn); btns.push(btn);
+    });
+  }
+}
+
+function answerTF(chosen, tBtn, fBtn, q) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const isCorrect = chosen === q.ans;
+  if (isCorrect) quizCorrect++;
+  tBtn.disabled = true; fBtn.disabled = true;
+  if (chosen === true) {
+    tBtn.classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) fBtn.classList.add('correct');
+  } else {
+    fBtn.classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) tBtn.classList.add('correct');
+  }
+  showExplanation(isCorrect, q.exp);
+}
+
+function answerMCQ(chosen, btns, q) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const isCorrect = chosen === q.ans;
+  if (isCorrect) quizCorrect++;
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === chosen && isCorrect) b.classList.add('correct');
+    else if (i === chosen && !isCorrect) b.classList.add('wrong');
+    else if (i === q.ans) b.classList.add('show-correct');
+  });
+  showExplanation(isCorrect, q.exp);
+}
+
+function showExplanation(correct, text) {
+  const el = document.getElementById('qExplanation');
+  el.innerHTML = `<strong>${correct ? '✓ Correct!' : '✗ Incorrect'}</strong> — ${text}`;
+  el.classList.add('visible');
+  document.getElementById('qNextBtn').textContent = quizIndex + 1 < quizDeck.length ? 'Next Question →' : 'See Results';
+  document.getElementById('qNextBtn').classList.add('visible');
+  document.getElementById('qScore').textContent = `✓ ${quizCorrect}`;
+}
+
+function nextQuestion() {
+  quizIndex++;
+  if (quizIndex >= quizDeck.length) showResult();
+  else { renderQuestion(); document.querySelector('.main').scrollTop = 0; }
+}
+
+function showResult() {
+  document.getElementById('quizActive').style.display = 'none';
+  const result = document.getElementById('quizResult');
+  result.classList.add('visible');
+  const pct = Math.round((quizCorrect / quizDeck.length) * 100);
+  document.getElementById('rScore').textContent = pct + '%';
+  document.getElementById('rCorrect').textContent = `✓ ${quizCorrect} Correct`;
+  document.getElementById('rWrong').textContent = `✗ ${quizDeck.length - quizCorrect} Wrong`;
+  const labels = ["Excellent! You're ready for the exam 🎯","Good work — review the missed questions 📖","Keep studying — you're getting there 💪","Review the material and try again 🔁"];
+  document.getElementById('rLabel').textContent = labels[pct>=90?0:pct>=75?1:pct>=60?2:3];
+}
+
+function restartQuiz() {
+  document.getElementById('quizResult').classList.remove('visible');
+  document.getElementById('quizStart').style.display = 'block';
+  document.querySelector('.main').scrollTop = 0;
+}
+
+function quizBack() {
+  if (quizIndex === 0 && !quizAnswered) exitToMenu();
+  else {
+    document.getElementById('confirmCount').textContent = quizAnswered ? quizIndex + 1 : quizIndex;
+    document.getElementById('confirmModal').style.display = 'flex';
+  }
+}
+function exitToMenu() {
+  document.getElementById('quizActive').style.display = 'none';
+  document.getElementById('quizResult').classList.remove('visible');
+  document.getElementById('quizStart').style.display = 'block';
+  document.querySelector('.main').scrollTop = 0;
+}
+function closeConfirmModal() { document.getElementById('confirmModal').style.display = 'none'; }
+function closeConfirm(e) { if (e.target === document.getElementById('confirmModal')) closeConfirmModal(); }
+function confirmExit() { closeConfirmModal(); exitToMenu(); }
+
+/* ══════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════ */
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.navbtn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  document.querySelector('.main').scrollTop = 0;
+  document.getElementById('sectionBadge').textContent = {fc:'Flash Cards', quiz:'Quiz'}[id];
+}
+
+/* ── INIT ── */
+renderFCFilters();
+buildDeck();
+renderQuizTopics();
+</script>
+</body>
+</html>
